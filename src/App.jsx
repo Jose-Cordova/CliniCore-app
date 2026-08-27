@@ -1,13 +1,7 @@
-import { Button } from "primereact/button";
+import Router from './app/Router.jsx';
 
 const App = () => {
-  return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold text-blue-600">AutoFix</h1>
-      <p>Proyecto configurado correctamente.</p>
-      <Button label="Probar" icon="pi pi-check" className="bg-red-500" />
-    </div>
-  );
-}
+  return <Router />;
+};
 
 export default App;
