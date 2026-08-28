@@ -9,7 +9,7 @@ export const validarNombreApellido = (valor) => {
     return 'Debe tener al menos 2 letras';
   }
   const regex = /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü' -]+$/;
-  if (!regexx.test(valor)) {
+  if (!regex.test(valor)) {
     return 'Solo se permiten letras, espacios, tildes y apóstrofes';
   }
   return '';

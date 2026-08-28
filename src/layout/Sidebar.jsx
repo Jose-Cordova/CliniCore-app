@@ -18,7 +18,7 @@ const opcionesMenu = [
     etiqueta: "Doctores",
     icono: "pi pi-user-md",
     ruta: "/doctores",
-    rolesPermitidos: ["ADMIN"], // solo admin gestiona doctores
+    rolesPermitidos: ["ADMIN"],
   },
   {
     etiqueta: "Especialidades",
@@ -30,7 +30,13 @@ const opcionesMenu = [
     etiqueta: "Mi Expediente",
     icono: "pi pi-book",
     ruta: "/mi-expediente",
-    rolesPermitidos: ["PACIENTE"], // solo pacientes ven su expediente
+    rolesPermitidos: ["PACIENTE"],
+  },
+  {
+    etiqueta: "Usuarios",           // ✅ nueva opción
+    icono: "pi pi-user-edit",      // icono de gestión de usuarios
+    ruta: "/usuarios",
+    rolesPermitidos: ["ADMIN"],    // solo visible para administradores
   },
 ];
 

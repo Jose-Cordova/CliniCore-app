@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useCallback } from "react";
 import { jwtDecode } from "jwt-decode";
 import { CLAVE_TOKEN } from "../utils/constants";
+import axiosClient from "../services/axiosClient";
 
 const AuthContext = createContext(null);
 
@@ -11,6 +12,7 @@ const mapearPayload = (payload) => ({
   rol: payload.rol,
   pacienteId: payload.pacienteId,
   doctorId: payload.doctorId,
+  debeCambiarContrasenia: payload.debeCambiarContrasenia || false,
 });
 
 const obtenerSesionInicial = () => {
@@ -49,6 +51,19 @@ export const AuthProvider = ({ children }) => {
     });
   }, []);
 
+  const cambiarContrasenia = useCallback(async (nuevaContrasenia) => {
+    const respuesta = await axiosClient.post("/auth/cambiar-contrasenia", {
+      nuevaContrasenia,
+    });
+    const payload = jwtDecode(respuesta.data.token);
+    localStorage.setItem(CLAVE_TOKEN, respuesta.data.token);
+    setSesion({
+      token: respuesta.data.token,
+      usuario: mapearPayload(payload),
+    });
+    return respuesta.data;
+  }, []);
+
   const tienePermiso = useCallback(
     (rolesPermitidos) => {
       if (!rolesPermitidos || rolesPermitidos.length === 0) return true;
@@ -64,6 +79,7 @@ export const AuthProvider = ({ children }) => {
     estaAutenticado: !!sesion.token && !!sesion.usuario,
     login,
     logout,
+    cambiarContrasenia,
     tienePermiso,
   };
 
