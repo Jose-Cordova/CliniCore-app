@@ -7,12 +7,17 @@ import { Card } from 'primereact/card';
 import { Dialog } from 'primereact/dialog';
 import { Toast } from 'primereact/toast';
 import { Dropdown } from 'primereact/dropdown';
+import { MultiSelect } from 'primereact/multiselect';
 import { Calendar } from 'primereact/calendar';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Tag } from 'primereact/tag';
+import { Badge } from 'primereact/badge';
+import { Tooltip } from 'primereact/tooltip';
 import { Toolbar } from 'primereact/toolbar';
 import { ConfirmDialog } from 'primereact/confirmdialog';
+import { IconField } from 'primereact/iconfield';
+import { InputIcon } from 'primereact/inputicon';
 
 // Configuración del idioma español para PrimeReact
 addLocale('es', {
@@ -46,7 +51,7 @@ addLocale('es', {
   cancel: 'Cancelar',
   dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
   dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'],
-  dayNamesMin: ['D', 'L', 'M', 'X', 'J', 'V', 'S'],
+  dayNamesMin: ['D', 'L', 'M', 'M', 'J', 'V', 'S'],
   monthNames: [
     'Enero',
     'Febrero',
@@ -103,11 +108,16 @@ export {
   Dialog,
   Toast,
   Dropdown,
+  MultiSelect,
   Calendar,
   DataTable,
   Column,
   Tag,
+  Badge,
+  Tooltip,
   Toolbar,
   ConfirmDialog,
+  IconField,
+  InputIcon,
   // ... más componentes
 };

@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { useNavigate, Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Button, InputText, Password, Toast } from "../config/primeReact.jsx";
 import { useAuth } from "./AuthContext";
 import axiosClient from "../services/axiosClient";
@@ -9,13 +9,9 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [enviando, setEnviando] = useState(false);
-  const { login, estaAutenticado } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
   const toastRef = useRef(null);
-
-  if (estaAutenticado) {
-    return <Navigate to="/" replace />;
-  }
 
   const manejarEnvio = async (evento) => {
     evento.preventDefault();
@@ -26,9 +22,15 @@ const LoginPage = () => {
         email,
         password,
       });
+
       login(respuesta.data.token);
       mostrarExitoApi(toastRef, "Sesión iniciada correctamente");
-      navigate("/", { replace: true });
+
+      if (respuesta.data.debeCambiarContrasenia) {
+        navigate("/cambiar-contrasenia", { replace: true });
+      } else {
+        navigate("/", { replace: true });
+      }
     } catch (error) {
       mostrarErrorApi(toastRef, error, "No se pudo iniciar sesión");
     } finally {
