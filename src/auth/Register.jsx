@@ -4,6 +4,14 @@ import { Button, InputText, Password, Toast, Calendar, Dropdown } from "../confi
 import { useAuth } from "./AuthContext";
 import axiosClient from "../services/axiosClient";
 import { mostrarErrorApi, mostrarExitoApi } from "../utils/alertasApi";
+import {
+  validarEmail,
+  validarContrasena,
+  validarNombreApellido,
+  validarFormatoDUI,
+  validarDuiLocal,
+  validarTelefonoElSalvador,
+} from "../utils/validaciones";
 
 const RegisterPage = () => {
   const [form, setForm] = useState({
@@ -19,6 +27,20 @@ const RegisterPage = () => {
     telefono: "",
     alergiaIntolerancia: "",
   });
+
+  const [errores, setErrores] = useState({
+    email: "",
+    password: "",
+    confirmPassword: "",
+    nombre: "",
+    apellido: "",
+    dui: "",
+    fechaNacimiento: "",
+    genero: "",
+    direccion: "",
+    telefono: "",
+  });
+
   const [enviando, setEnviando] = useState(false);
   const { login, estaAutenticado } = useAuth();
   const navigate = useNavigate();
@@ -28,45 +50,96 @@ const RegisterPage = () => {
     return <Navigate to="/" replace />;
   }
 
-  const manejarCambio = (nombreCampo, valor) => {
-    setForm((prev) => ({ ...prev, [nombreCampo]: valor }));
+  const manejarCambio = (campo, valor) => {
+    setForm((prev) => ({ ...prev, [campo]: valor }));
+    setErrores((prev) => ({ ...prev, [campo]: validarCampo(campo, valor) }));
   };
 
-  const validarContrasena = (password) => {
-    const regex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    return regex.test(password);
+  const manejarCambioNombreApellido = (campo, valor) => {
+    const limpio = valor.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s-]/g, '').replace(/-/g, '');
+    setForm((prev) => ({ ...prev, [campo]: limpio }));
+    setErrores((prev) => ({ ...prev, [campo]: validarCampo(campo, limpio) }));
   };
 
-  const validarEmail = (email) => {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return regex.test(email);
+  const manejarCambioDUI = (valor) => {
+    let soloDigitos = valor.replace(/\D/g, '');
+    soloDigitos = soloDigitos.slice(0, 9);
+    let formateado = soloDigitos;
+    if (soloDigitos.length > 8) {
+      formateado = soloDigitos.slice(0, 8) + '-' + soloDigitos.slice(8);
+    }
+    setForm((prev) => ({ ...prev, dui: formateado }));
+    setErrores((prev) => ({ ...prev, dui: validarCampo('dui', formateado) }));
+  };
+
+  const manejarCambioTelefono = (valor) => {
+    let soloDigitos = valor.replace(/\D/g, '');
+    soloDigitos = soloDigitos.slice(0, 8);
+    let formateado = soloDigitos;
+    if (soloDigitos.length > 4) {
+      formateado = soloDigitos.slice(0, 4) + '-' + soloDigitos.slice(4);
+    }
+    setForm((prev) => ({ ...prev, telefono: formateado }));
+    setErrores((prev) => ({ ...prev, telefono: validarCampo('telefono', formateado) }));
+  };
+
+  const validarCampo = (campo, valor) => {
+    switch (campo) {
+      case "email":
+        return validarEmail(valor) ? "" : "Correo electrónico inválido";
+      case "password":
+        return validarContrasena(valor)
+          ? ""
+          : "Mínimo 8 caracteres, una mayúscula, un número y un símbolo";
+      case "confirmPassword":
+        return valor === form.password ? "" : "Las contraseñas no coinciden";
+      case "nombre":
+        return validarNombreApellido(valor);
+      case "apellido":
+        return validarNombreApellido(valor);
+      case "dui":
+        if (!validarFormatoDUI(valor)) return "Formato: 00000000-0";
+        return validarDuiLocal(valor) ? "" : "DUI inválido";
+      case "telefono":
+        return validarTelefonoElSalvador(valor) ? "" : "Debe tener 8 dígitos";
+      case "fechaNacimiento":
+        return valor ? "" : "La fecha es obligatoria";
+      case "genero":
+        return valor ? "" : "Selecciona un género";
+      case "direccion":
+        return valor.trim().length >= 5 ? "" : "Debe tener al menos 5 caracteres";
+      default:
+        return "";
+    }
+  };
+
+  const formatearFecha = (fecha) => {
+    if (!fecha) return null;
+    const d = new Date(fecha);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
   };
 
   const manejarEnvio = async (evento) => {
     evento.preventDefault();
 
-    if (!validarEmail(form.email)) {
-      mostrarErrorApi(toastRef, { response: { status: 400, data: { message: "Correo electrónico inválido" } } });
-      return;
+    const nuevosErrores = {};
+    let hayErrores = false;
+
+    for (const campo in form) {
+      if (campo === "alergiaIntolerancia") continue;
+      const error = validarCampo(campo, form[campo]);
+      nuevosErrores[campo] = error;
+      if (error) hayErrores = true;
     }
 
-    if (!validarContrasena(form.password)) {
-      mostrarErrorApi(toastRef, {
-        response: {
-          status: 400,
-          data: {
-            message:
-              "La contraseña debe tener al menos 8 caracteres, una mayúscula, un número y un símbolo (@$!%*?&)",
-          },
-        },
-      });
-      return;
-    }
+    setErrores(nuevosErrores);
 
-    if (form.password !== form.confirmPassword) {
+    if (hayErrores) {
       mostrarErrorApi(toastRef, {
-        response: { status: 400, data: { message: "Las contraseñas no coinciden" } },
+        response: { status: 400, data: { message: "Revisa los campos marcados en rojo" } },
       });
       return;
     }
@@ -80,10 +153,10 @@ const RegisterPage = () => {
         nombre: form.nombre,
         apellido: form.apellido,
         dui: form.dui,
-        fechaNacimiento: form.fechaNacimiento,
+        fechaNacimiento: formatearFecha(form.fechaNacimiento),
         genero: form.genero,
         direccion: form.direccion,
-        telefono: form.telefono,
+        telefono: form.telefono.replace(/\D/g, ""),
         alergiaIntolerancia: form.alergiaIntolerancia,
       });
       login(respuesta.data.token);
@@ -101,6 +174,8 @@ const RegisterPage = () => {
     { label: "Femenino", value: "F" },
     { label: "Otro", value: "O" },
   ];
+
+  const claseError = (campo) => (errores[campo] ? "border-red-500 ring-1 ring-red-500" : "");
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 flex items-center justify-center p-4 sm:p-6 lg:p-8 font-sans relative overflow-hidden">
@@ -198,8 +273,8 @@ const RegisterPage = () => {
 
             <form onSubmit={manejarEnvio} className="space-y-4">
               {/* Sección 1: Datos de Acceso */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div className="sm:col-span-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                <div>
                   <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
                     Correo Electrónico *
                   </label>
@@ -208,12 +283,13 @@ const RegisterPage = () => {
                     value={form.email}
                     onChange={(e) => manejarCambio("email", e.target.value)}
                     placeholder="correo@ejemplo.com"
-                    className="w-full h-10 px-3 text-sm"
+                    className={`w-full h-10 px-3 text-sm ${claseError("email")}`}
                     required
                   />
+                  {errores.email && <small className="text-red-500 text-xs mt-1 block">{errores.email}</small>}
                 </div>
 
-                <div className="sm:col-span-1">
+                <div>
                   <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
                     Contraseña *
                   </label>
@@ -224,12 +300,13 @@ const RegisterPage = () => {
                     feedback={false}
                     toggleMask
                     className="w-full"
-                    inputClassName="w-full h-10 px-3 text-sm"
+                    inputClassName={`w-full h-10 px-3 text-sm ${claseError("password")}`}
                     required
                   />
+                  {errores.password && <small className="text-red-500 text-xs mt-1 block">{errores.password}</small>}
                 </div>
 
-                <div className="sm:col-span-1">
+                <div>
                   <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
                     Confirmar Contraseña *
                   </label>
@@ -240,9 +317,10 @@ const RegisterPage = () => {
                     feedback={false}
                     toggleMask
                     className="w-full"
-                    inputClassName="w-full h-10 px-3 text-sm"
+                    inputClassName={`w-full h-10 px-3 text-sm ${claseError("confirmPassword")}`}
                     required
                   />
+                  {errores.confirmPassword && <small className="text-red-500 text-xs mt-1 block">{errores.confirmPassword}</small>}
                 </div>
               </div>
 
@@ -254,11 +332,12 @@ const RegisterPage = () => {
                   </label>
                   <InputText
                     value={form.nombre}
-                    onChange={(e) => manejarCambio("nombre", e.target.value)}
+                    onChange={(e) => manejarCambioNombreApellido("nombre", e.target.value)}
                     placeholder="Ej. Juan Carlos"
-                    className="w-full h-10 px-3 text-sm"
+                    className={`w-full h-10 px-3 text-sm ${claseError("nombre")}`}
                     required
                   />
+                  {errores.nombre && <small className="text-red-500 text-xs mt-1 block">{errores.nombre}</small>}
                 </div>
 
                 <div>
@@ -267,27 +346,29 @@ const RegisterPage = () => {
                   </label>
                   <InputText
                     value={form.apellido}
-                    onChange={(e) => manejarCambio("apellido", e.target.value)}
+                    onChange={(e) => manejarCambioNombreApellido("apellido", e.target.value)}
                     placeholder="Ej. Pérez García"
-                    className="w-full h-10 px-3 text-sm"
+                    className={`w-full h-10 px-3 text-sm ${claseError("apellido")}`}
                     required
                   />
+                  {errores.apellido && <small className="text-red-500 text-xs mt-1 block">{errores.apellido}</small>}
                 </div>
               </div>
 
               {/* Sección 3: DUI, Fecha, Género, Teléfono */}
-              <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
                     DUI *
                   </label>
                   <InputText
                     value={form.dui}
-                    onChange={(e) => manejarCambio("dui", e.target.value)}
+                    onChange={(e) => manejarCambioDUI(e.target.value)}
                     placeholder="00000000-0"
-                    className="w-full h-10 px-3 text-sm"
+                    className={`w-full h-10 px-3 text-sm ${claseError("dui")}`}
                     required
                   />
+                  {errores.dui && <small className="text-red-500 text-xs mt-1 block">{errores.dui}</small>}
                 </div>
 
                 <div>
@@ -301,9 +382,10 @@ const RegisterPage = () => {
                     showIcon
                     placeholder="AAAA-MM-DD"
                     className="w-full"
-                    inputClassName="w-full h-10 px-3 text-sm"
+                    inputClassName={`w-full h-10 px-3 text-sm ${claseError("fechaNacimiento")}`}
                     required
                   />
+                  {errores.fechaNacimiento && <small className="text-red-500 text-xs mt-1 block">{errores.fechaNacimiento}</small>}
                 </div>
 
                 <div>
@@ -315,9 +397,10 @@ const RegisterPage = () => {
                     options={generos}
                     onChange={(e) => manejarCambio("genero", e.value)}
                     placeholder="Seleccionar"
-                    className="w-full h-10 text-sm"
+                    className={`w-full h-10 text-sm ${claseError("genero")}`}
                     required
                   />
+                  {errores.genero && <small className="text-red-500 text-xs mt-1 block">{errores.genero}</small>}
                 </div>
 
                 <div>
@@ -326,11 +409,12 @@ const RegisterPage = () => {
                   </label>
                   <InputText
                     value={form.telefono}
-                    onChange={(e) => manejarCambio("telefono", e.target.value)}
+                    onChange={(e) => manejarCambioTelefono(e.target.value)}
                     placeholder="7000-0000"
-                    className="w-full h-10 px-3 text-sm"
+                    className={`w-full h-10 px-3 text-sm ${claseError("telefono")}`}
                     required
                   />
+                  {errores.telefono && <small className="text-red-500 text-xs mt-1 block">{errores.telefono}</small>}
                 </div>
               </div>
 
@@ -344,9 +428,10 @@ const RegisterPage = () => {
                     value={form.direccion}
                     onChange={(e) => manejarCambio("direccion", e.target.value)}
                     placeholder="Colonia, calle, # de casa"
-                    className="w-full h-10 px-3 text-sm"
+                    className={`w-full h-10 px-3 text-sm ${claseError("direccion")}`}
                     required
                   />
+                  {errores.direccion && <small className="text-red-500 text-xs mt-1 block">{errores.direccion}</small>}
                 </div>
 
                 <div>

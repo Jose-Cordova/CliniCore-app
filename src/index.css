@@ -1,3 +1,6 @@
+/* Importación de fuentes personalizadas */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap');
+
 @layer tailwind-base, primereact, tailwind-utilities;
 
 @layer tailwind-base {
@@ -7,47 +10,49 @@
   }
 }
 
+/* Estilos personalizados de PrimeReact dentro de la capa primereact */
+@layer primereact {
+  .p-inputtext {
+    @apply rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm transition-all duration-200 shadow-sm placeholder:text-slate-400;
+  }
+
+  .p-inputtext:enabled:hover {
+    @apply border-slate-300 bg-white;
+  }
+
+  .p-inputtext:enabled:focus {
+    @apply border-blue-500 bg-white ring-4 ring-blue-500/10 outline-none;
+  }
+
+  .p-password,
+  .p-calendar,
+  .p-dropdown {
+    @apply w-full;
+  }
+
+  .p-password .p-inputtext,
+  .p-calendar .p-inputtext {
+    @apply w-full;
+  }
+
+  .p-dropdown {
+    @apply rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm transition-all duration-200 shadow-sm;
+  }
+
+  .p-dropdown:not(.p-disabled):hover {
+    @apply border-slate-300 bg-white;
+  }
+
+  .p-dropdown:not(.p-disabled).p-focus {
+    @apply border-blue-500 bg-white ring-4 ring-blue-500/10 outline-none;
+  }
+
+  .p-button {
+    @apply rounded-xl font-semibold transition-all duration-200 shadow-sm active:scale-[0.99];
+  }
+}
+
 @layer tailwind-utilities {
   @tailwind components;
   @tailwind utilities;
-}
-
-/* Custom PrimeReact Polish */
-.p-inputtext {
-  @apply rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm transition-all duration-200 shadow-sm placeholder:text-slate-400;
-}
-
-.p-inputtext:enabled:hover {
-  @apply border-slate-300 bg-white;
-}
-
-.p-inputtext:enabled:focus {
-  @apply border-blue-500 bg-white ring-4 ring-blue-500/10 outline-none;
-}
-
-.p-password,
-.p-calendar,
-.p-dropdown {
-  @apply w-full;
-}
-
-.p-password .p-inputtext,
-.p-calendar .p-inputtext {
-  @apply w-full;
-}
-
-.p-dropdown {
-  @apply rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm transition-all duration-200 shadow-sm;
-}
-
-.p-dropdown:not(.p-disabled):hover {
-  @apply border-slate-300 bg-white;
-}
-
-.p-dropdown:not(.p-disabled).p-focus {
-  @apply border-blue-500 bg-white ring-4 ring-blue-500/10 outline-none;
-}
-
-.p-button {
-  @apply rounded-xl font-semibold transition-all duration-200 shadow-sm active:scale-[0.99];
 }
