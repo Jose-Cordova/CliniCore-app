@@ -38,6 +38,12 @@ const opcionesMenu = [
     ruta: "/usuarios",
     rolesPermitidos: ["ADMIN"],    // solo visible para administradores
   },
+  {
+    etiqueta: "Mi Disponibilidad",
+    icono: "pi pi-calendar-plus",
+    ruta: "/disponibilidad",
+    rolesPermitidos: ["DOCTOR"],
+  }
 ];
 
 const Sidebar = ({ isOpen, onClose }) => {
@@ -81,10 +87,6 @@ const Sidebar = ({ isOpen, onClose }) => {
           </div>
         ))}
       </nav>
-
-      <div className="px-4 py-3 border-t border-sidebar-hover text-xs text-sidebar-text shrink-0 truncate">
-        {usuario?.nombre}
-      </div>
     </aside>
   );
 };

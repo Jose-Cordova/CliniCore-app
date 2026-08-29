@@ -28,17 +28,17 @@ const AppLayout = () => {
     <div className="h-screen flex flex-col bg-surface overflow-hidden font-sans text-slate-900">
       <Navbar onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
 
-      <div className="flex flex-1 relative overflow-hidden h-[calc(100vh-64px)]">
+      <div className="flex flex-1 relative overflow-hidden">
         <Sidebar isOpen={sidebarOpen} onClose={handleCloseSidebar} />
 
         <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative h-full">
           <main className="flex-1 p-4 md:p-6 overflow-y-auto bg-surface">
             <Outlet />
           </main>
-
-          <Footer />
         </div>
       </div>
+
+      <Footer />
 
       {sidebarOpen && (
         <div
