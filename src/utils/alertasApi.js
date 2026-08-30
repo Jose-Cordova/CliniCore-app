@@ -37,12 +37,12 @@ export const mostrarErrorApi = (toastRef, error, msjPorDefecto = 'Ocurrió un er
  * @param {React.RefObject} toastRef - referencia al componente <Toast />
  * @param {string} msj - mensaje a mostrar
  */
-export const mostrarExitoApi = (toastRef, msj) => {
+export const mostrarExitoApi = (toastRef, msj, duracion = 4000) => {
   toastRef?.current?.show({
     severity: 'success',
     summary: 'Éxito',
     detail: msj,
-    life: 3000,
+    life: duracion,
   });
 };
 

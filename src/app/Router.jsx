@@ -5,6 +5,17 @@ import RegisterPage from "../auth/Register.jsx";
 import RutaProtegida from "../auth/RutaProtegida.jsx";
 import CambiarContrasenia from "../auth/CambiarContrasenia.jsx";
 import GestionUsuarios from "../components/usuarios/GestionUsuarios.jsx"; // ajusta según tu estructura
+import DisponibilidadDoctor from "../components/disponibilidad/DisponibilidadDoctor.jsx";
+import DashboardDoctor from "../components/dashboard/DashboardDoctor.jsx";
+import { useAuth } from "../auth/AuthContext.jsx";
+
+const Inicio = () => {
+  const { usuario } = useAuth();
+  if (usuario?.rol === "DOCTOR") {
+    return <DashboardDoctor />;
+  }
+  return <div>Inicio</div>;
+};
 
 const Router = () => (
   <BrowserRouter>
@@ -31,7 +42,7 @@ const Router = () => (
           </RutaProtegida>
         }
       >
-        <Route path="/" element={<div>Inicio</div>} />
+        <Route path="/" element={<Inicio />} />
         <Route path="/citas" element={<div>Citas</div>} />
         <Route path="/pacientes" element={<div>Pacientes</div>} />
         <Route path="/doctores" element={<div>Doctores</div>} />
@@ -47,6 +58,7 @@ const Router = () => (
             </RutaProtegida>
           }
         />
+        <Route path="/disponibilidad" element={<DisponibilidadDoctor />} />
       </Route>
 
       {/* Redirección por defecto */}
