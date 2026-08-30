@@ -113,13 +113,12 @@ const GestionUsuarios = () => {
     const nombre = (usuario.nombre || "").toLowerCase();
     const apellido = (usuario.apellido || "").toLowerCase();
     const rol = (usuario.rol || "").toLowerCase();
-    const tipo = (usuario.tipo || "").toLowerCase();
+    // Se eliminó el filtrado por tipo
     return (
       email.includes(termino) ||
       nombre.includes(termino) ||
       apellido.includes(termino) ||
-      rol.includes(termino) ||
-      tipo.includes(termino)
+      rol.includes(termino)
     );
   });
 
@@ -214,6 +213,14 @@ const GestionUsuarios = () => {
       cargarUsuarios();
     } catch (error) {
       mostrarErrorApi(toastRef, error);
+      if (error.response?.status === 409) {
+        const mensaje = error.response.data?.message || "";
+        setErroresDoctor((prev) => ({
+          ...prev,
+          telefono: mensaje.includes("teléfono") ? mensaje : prev.telefono,
+          codigo: mensaje.includes("código") ? mensaje : prev.codigo,
+        }));
+      }
     } finally {
       setEnviando(false);
     }
@@ -414,7 +421,7 @@ const GestionUsuarios = () => {
       case "ADMIN":
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200">
-            <i className="pi pi-shield text-[10px]" /> Administrador
+            <i className="pi pi-user text-[10px]" /> Administrador
           </span>
         );
       case "MEDICO":
@@ -428,7 +435,7 @@ const GestionUsuarios = () => {
       case "PERSONAL":
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
-            <i className="pi pi-users text-[10px]" /> Personal
+            <i className="pi pi-user text-[10px]" /> Personal
           </span>
         );
       default:
@@ -864,7 +871,7 @@ const GestionUsuarios = () => {
       </Dialog>
 
       {/* ========================================================
-          MODAL 4: NUEVA ESPECIALIDAD MÉDICA
+          MODAL 4: NUEVA ESPECIALIDAD MEDICA
          ======================================================== */}
       <Dialog
         visible={modalNuevaEspecialidad}

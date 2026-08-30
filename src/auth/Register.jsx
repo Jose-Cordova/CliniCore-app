@@ -162,8 +162,18 @@ const RegisterPage = () => {
       login(respuesta.data.token);
       mostrarExitoApi(toastRef, "Registro exitoso, ¡bienvenido!");
       navigate("/", { replace: true });
-    } catch (error) {
+        } catch (error) {
       mostrarErrorApi(toastRef, error, "No se pudo completar el registro");
+
+      // Si es conflicto (409) por duplicidad
+      if (error.response?.status === 409) {
+        const mensaje = error.response.data?.message || "";
+        setErrores((prev) => ({
+          ...prev,
+          dui: mensaje.includes("DUI") ? mensaje : prev.dui,
+          telefono: mensaje.includes("teléfono") ? mensaje : prev.telefono,
+        }));
+      }
     } finally {
       setEnviando(false);
     }
