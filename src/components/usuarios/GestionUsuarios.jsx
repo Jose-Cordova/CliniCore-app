@@ -871,7 +871,7 @@ const GestionUsuarios = () => {
       </Dialog>
 
       {/* ========================================================
-          MODAL 4: NUEVA ESPECIALIDAD MÉDICA
+          MODAL 4: NUEVA ESPECIALIDAD MEDICA
          ======================================================== */}
       <Dialog
         visible={modalNuevaEspecialidad}
