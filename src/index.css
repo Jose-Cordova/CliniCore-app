@@ -84,3 +84,16 @@
   @tailwind components;
   @tailwind utilities;
 }
+
+/* Separar mes y año en el calendario */
+.p-datepicker .p-datepicker-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem; /* espacio entre mes y año */
+}
+
+.p-datepicker .p-datepicker-title .p-datepicker-month,
+.p-datepicker .p-datepicker-title .p-datepicker-year {
+  margin: 0;
+}
