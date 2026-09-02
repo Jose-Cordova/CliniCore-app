@@ -9,6 +9,7 @@ import DisponibilidadDoctor from "../components/disponibilidad/DisponibilidadDoc
 import DashboardDoctor from "../components/dashboard/DashboardDoctor.jsx";
 import HorarioBaseDoctor from "../components/horario/HorarioBaseDoctor.jsx";
 import CitasDoctor from "../components/citas/CitasDoctor.jsx";
+import PacientesDoctor from "../components/pacientes/PacientesDoctor.jsx"
 import { useAuth } from "../auth/AuthContext.jsx";
 
 const Inicio = () => {
@@ -46,7 +47,7 @@ const Router = () => (
       >
         <Route path="/" element={<Inicio />} />
         <Route path="/citas" element={<CitasDoctor />} />
-        <Route path="/pacientes" element={<div>Pacientes</div>} />
+        <Route path="/pacientes" element={<PacientesDoctor />} />
         <Route path="/doctores" element={<div>Doctores</div>} />
         <Route path="/especialidades" element={<div>Especialidades</div>} />
         <Route path="/mi-expediente" element={<div>Mi Expediente</div>} />
