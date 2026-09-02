@@ -43,7 +43,13 @@ const opcionesMenu = [
     icono: "pi pi-calendar-plus",
     ruta: "/disponibilidad",
     rolesPermitidos: ["DOCTOR"],
-  }
+  },
+  {
+    etiqueta: "Mi Horario",
+    icono: "pi pi-clock",
+    ruta: "/mi-horario",
+    rolesPermitidos: ["DOCTOR"],
+  },
 ];
 
 const Sidebar = ({ isOpen, onClose }) => {
