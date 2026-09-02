@@ -122,9 +122,6 @@ export default function CitasDoctor() {
         <span className="text-xs font-bold text-slate-800 block truncate">
           {rowData.pacienteNombre || "Paciente no asignado"}
         </span>
-        <span className="text-[11px] text-slate-400">
-          Cita #{rowData.id}
-        </span>
       </div>
     </div>
   );
@@ -238,8 +235,8 @@ export default function CitasDoctor() {
       </div>
 
       {/* Buscador estilizado */}
-      <div className="flex items-center gap-2 w-full lg:w-auto">
-        <div className="relative flex-1 lg:w-80">
+      <div className="w-full lg:w-auto">
+        <div className="relative w-full lg:w-80">
           <i className="pi pi-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none" />
           <InputText
             value={globalFilter}
@@ -256,14 +253,6 @@ export default function CitasDoctor() {
             </button>
           )}
         </div>
-
-        <Button
-          icon="pi pi-refresh"
-          onClick={cargarCitas}
-          loading={loading}
-          className="p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 shadow-xs"
-          title="Recargar citas"
-        />
       </div>
     </div>
   );
@@ -325,8 +314,6 @@ export default function CitasDoctor() {
                 Expediente y Atención Médica
               </span>
               <span className="text-xs text-slate-500 flex items-center gap-2 mt-0.5">
-                <span>Cita <strong className="text-slate-700">#{citaSeleccionada?.id}</strong></span>
-                <span>•</span>
                 <span className="text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
                   Listo para consulta
                 </span>
