@@ -43,7 +43,13 @@ const opcionesMenu = [
     icono: "pi pi-calendar-plus",
     ruta: "/disponibilidad",
     rolesPermitidos: ["DOCTOR"],
-  }
+  },
+  {
+    etiqueta: "Mi Horario",
+    icono: "pi pi-clock",
+    ruta: "/mi-horario",
+    rolesPermitidos: ["DOCTOR"],
+  },
 ];
 
 const Sidebar = ({ isOpen, onClose }) => {
@@ -65,11 +71,7 @@ const Sidebar = ({ isOpen, onClose }) => {
           : "w-64 -translate-x-full md:w-0 md:translate-x-0 md:overflow-hidden"}
       `}
     >
-      <div className="h-16 flex items-center px-4 border-b border-sidebar-hover shrink-0">
-        <span className="font-bold text-lg whitespace-nowrap text-white">CliniCore</span>
-      </div>
-
-      <nav className="flex-1 overflow-y-auto py-2">
+      <nav className="flex-1 overflow-y-auto py-3">
         {opcionesVisibles.map((opcion) => (
           <div key={opcion.etiqueta}>
             {opcion.submenu ? (

@@ -7,6 +7,9 @@ import CambiarContrasenia from "../auth/CambiarContrasenia.jsx";
 import GestionUsuarios from "../components/usuarios/GestionUsuarios.jsx"; // ajusta según tu estructura
 import DisponibilidadDoctor from "../components/disponibilidad/DisponibilidadDoctor.jsx";
 import DashboardDoctor from "../components/dashboard/DashboardDoctor.jsx";
+import HorarioBaseDoctor from "../components/horario/HorarioBaseDoctor.jsx";
+import CitasDoctor from "../components/citas/CitasDoctor.jsx";
+import PacientesDoctor from "../components/pacientes/PacientesDoctor.jsx"
 import { useAuth } from "../auth/AuthContext.jsx";
 
 const Inicio = () => {
@@ -43,8 +46,8 @@ const Router = () => (
         }
       >
         <Route path="/" element={<Inicio />} />
-        <Route path="/citas" element={<div>Citas</div>} />
-        <Route path="/pacientes" element={<div>Pacientes</div>} />
+        <Route path="/citas" element={<CitasDoctor />} />
+        <Route path="/pacientes" element={<PacientesDoctor />} />
         <Route path="/doctores" element={<div>Doctores</div>} />
         <Route path="/especialidades" element={<div>Especialidades</div>} />
         <Route path="/mi-expediente" element={<div>Mi Expediente</div>} />
@@ -59,6 +62,7 @@ const Router = () => (
           }
         />
         <Route path="/disponibilidad" element={<DisponibilidadDoctor />} />
+        <Route path="/mi-horario" element={<HorarioBaseDoctor />} />
       </Route>
 
       {/* Redirección por defecto */}
