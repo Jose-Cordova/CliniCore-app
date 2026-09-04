@@ -9,6 +9,7 @@ import {
   Toast,
 } from "../../config/primeReact.jsx";
 import axiosClient from "../../services/axiosClient";
+import usuarioService from "../../services/usuarioService";
 import { mostrarErrorApi, mostrarExitoApi } from "../../utils/alertasApi";
 import { listarEspecialidades, crearEspecialidad } from "../../services/especialidadesService";
 import {
@@ -60,8 +61,8 @@ const GestionUsuarios = () => {
 
   const cargarUsuarios = useCallback(async () => {
     try {
-      const respuesta = await axiosClient.get("/usuarios");
-      setUsuarios(respuesta.data);
+      const data = await usuarioService.listarUsuarios();
+      setUsuarios(data);
     } catch (error) {
       mostrarErrorApi(toastRef, error, "No se pudieron cargar los usuarios");
     } finally {
@@ -82,12 +83,12 @@ const GestionUsuarios = () => {
     let montado = true;
     const ejecutarCarga = async () => {
       try {
-        const [respUsuarios, listaEsp] = await Promise.all([
-          axiosClient.get("/usuarios"),
+        const [dataUsuarios, listaEsp] = await Promise.all([
+          usuarioService.listarUsuarios(),
           listarEspecialidades(),
         ]);
         if (montado) {
-          setUsuarios(respUsuarios.data);
+          setUsuarios(dataUsuarios);
           setEspecialidades(listaEsp);
         }
       } catch (error) {
@@ -188,10 +189,10 @@ const GestionUsuarios = () => {
         ...formDoctor,
         telefono: formDoctor.telefono.replace(/\D/g, ""),
       };
-      const respuesta = await axiosClient.post("/auth/registro-doctor", payload);
+      const data = await usuarioService.registrarDoctor(payload);
       mostrarExitoApi(toastRef, "Doctor registrado correctamente");
-      if (respuesta.data.contraseniaTemporal) {
-        mostrarContraseniaTemporal(respuesta.data.contraseniaTemporal);
+      if (data.contraseniaTemporal) {
+        mostrarContraseniaTemporal(data.contraseniaTemporal);
       }
       setModalDoctor(false);
       setFormDoctor({
@@ -237,10 +238,10 @@ const GestionUsuarios = () => {
 
     setEnviando(true);
     try {
-      const respuesta = await axiosClient.post("/auth/registro-personal", formPersonal);
+      const data = await usuarioService.registrarPersonal(formPersonal);
       mostrarExitoApi(toastRef, "Personal registrado correctamente");
-      if (respuesta.data.contraseniaTemporal) {
-        mostrarContraseniaTemporal(respuesta.data.contraseniaTemporal);
+      if (data.contraseniaTemporal) {
+        mostrarContraseniaTemporal(data.contraseniaTemporal);
       }
       setModalPersonal(false);
       setFormPersonal({ email: "" });
@@ -264,10 +265,10 @@ const GestionUsuarios = () => {
 
     setEnviando(true);
     try {
-      const respuesta = await axiosClient.post("/auth/registro-admin", formAdmin);
+      const data = await usuarioService.registrarAdmin(formAdmin);
       mostrarExitoApi(toastRef, "Administrador registrado correctamente");
-      if (respuesta.data.contraseniaTemporal) {
-        mostrarContraseniaTemporal(respuesta.data.contraseniaTemporal);
+      if (data.contraseniaTemporal) {
+        mostrarContraseniaTemporal(data.contraseniaTemporal);
       }
       setModalAdmin(false);
       setFormAdmin({ email: "" });
@@ -363,14 +364,44 @@ const GestionUsuarios = () => {
 
     if (resultado.isConfirmed) {
       try {
-        await axiosClient.patch(`/usuarios/${usuario.id}/estado`, {
-          estado: !usuario.estado,
-        });
+        await usuarioService.cambiarEstado(usuario.id, !usuario.estado);
         mostrarExitoApi(
           toastRef,
           `Usuario ${usuario.estado ? "inactivado" : "activado"} correctamente`
         );
         cargarUsuarios();
+      } catch (error) {
+        mostrarErrorApi(toastRef, error);
+      }
+    }
+  };
+
+  const confirmarResetPassword = async (usuario) => {
+    const resultado = await Swal.fire({
+      title: "¿Resetear contraseña?",
+      html: `<p class="text-sm text-slate-600">Se generará una nueva contraseña temporal para el usuario <strong>${
+        usuario.nombre || usuario.email
+      }</strong>.</p>`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, resetear",
+      cancelButtonText: "Cancelar",
+      confirmButtonColor: "#EAB308",
+      cancelButtonColor: "#64748B",
+      customClass: {
+        popup: "rounded-2xl shadow-2xl border border-slate-100 font-sans",
+        confirmButton: "rounded-xl font-semibold px-4 py-2 text-sm",
+        cancelButton: "rounded-xl font-semibold px-4 py-2 text-sm",
+      },
+    });
+
+    if (resultado.isConfirmed) {
+      try {
+        const data = await usuarioService.resetearContrasenia(usuario.id);
+        mostrarExitoApi(toastRef, "Contraseña reseteada correctamente");
+        if (data.contraseniaTemporal) {
+          mostrarContraseniaTemporal(data.contraseniaTemporal);
+        }
       } catch (error) {
         mostrarErrorApi(toastRef, error);
       }
@@ -383,6 +414,16 @@ const GestionUsuarios = () => {
 
     return (
       <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => confirmarResetPassword(rowData)}
+          title="Resetear contraseña"
+          className="px-2.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all duration-300 shadow-sm border bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100 hover:text-amber-800 active:scale-95"
+        >
+          <i className="pi pi-key text-xs text-amber-600" />
+          <span>Resetear</span>
+        </button>
+
         <button
           type="button"
           disabled={esAdmin}
@@ -584,7 +625,7 @@ const GestionUsuarios = () => {
               </span>
             )}
           />
-          <Column header="Acciones" body={actionBody} style={{ width: "140px" }} />
+          <Column header="Acciones" body={actionBody} style={{ width: "220px" }} />
         </DataTable>
       </div>
 
