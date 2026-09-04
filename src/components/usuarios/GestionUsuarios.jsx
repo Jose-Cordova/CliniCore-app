@@ -8,8 +8,9 @@ import {
   Dropdown,
   Toast,
 } from "../../config/primeReact.jsx";
-import axiosClient from "../../services/axiosClient";
+import usuarioService from "../../services/usuarioService";
 import { mostrarErrorApi, mostrarExitoApi } from "../../utils/alertasApi";
+import { useAuth } from "../../auth/AuthContext";
 import { listarEspecialidades, crearEspecialidad } from "../../services/especialidadesService";
 import {
   validarEmail,
@@ -58,10 +59,13 @@ const GestionUsuarios = () => {
   const [enviando, setEnviando] = useState(false);
   const toastRef = useRef(null);
 
+  const { usuario: usuarioActual } = useAuth();
+  const esSuperAdmin = usuarioActual?.email === "admin@gmail.com";
+
   const cargarUsuarios = useCallback(async () => {
     try {
-      const respuesta = await axiosClient.get("/usuarios");
-      setUsuarios(respuesta.data);
+      const data = await usuarioService.listarUsuarios();
+      setUsuarios(data);
     } catch (error) {
       mostrarErrorApi(toastRef, error, "No se pudieron cargar los usuarios");
     } finally {
@@ -82,12 +86,12 @@ const GestionUsuarios = () => {
     let montado = true;
     const ejecutarCarga = async () => {
       try {
-        const [respUsuarios, listaEsp] = await Promise.all([
-          axiosClient.get("/usuarios"),
+        const [dataUsuarios, listaEsp] = await Promise.all([
+          usuarioService.listarUsuarios(),
           listarEspecialidades(),
         ]);
         if (montado) {
-          setUsuarios(respUsuarios.data);
+          setUsuarios(dataUsuarios);
           setEspecialidades(listaEsp);
         }
       } catch (error) {
@@ -188,10 +192,10 @@ const GestionUsuarios = () => {
         ...formDoctor,
         telefono: formDoctor.telefono.replace(/\D/g, ""),
       };
-      const respuesta = await axiosClient.post("/auth/registro-doctor", payload);
+      const data = await usuarioService.registrarDoctor(payload);
       mostrarExitoApi(toastRef, "Doctor registrado correctamente");
-      if (respuesta.data.contraseniaTemporal) {
-        mostrarContraseniaTemporal(respuesta.data.contraseniaTemporal);
+      if (data.contraseniaTemporal) {
+        mostrarContraseniaTemporal(data.contraseniaTemporal);
       }
       setModalDoctor(false);
       setFormDoctor({
@@ -237,10 +241,10 @@ const GestionUsuarios = () => {
 
     setEnviando(true);
     try {
-      const respuesta = await axiosClient.post("/auth/registro-personal", formPersonal);
+      const data = await usuarioService.registrarPersonal(formPersonal);
       mostrarExitoApi(toastRef, "Personal registrado correctamente");
-      if (respuesta.data.contraseniaTemporal) {
-        mostrarContraseniaTemporal(respuesta.data.contraseniaTemporal);
+      if (data.contraseniaTemporal) {
+        mostrarContraseniaTemporal(data.contraseniaTemporal);
       }
       setModalPersonal(false);
       setFormPersonal({ email: "" });
@@ -264,10 +268,10 @@ const GestionUsuarios = () => {
 
     setEnviando(true);
     try {
-      const respuesta = await axiosClient.post("/auth/registro-admin", formAdmin);
+      const data = await usuarioService.registrarAdmin(formAdmin);
       mostrarExitoApi(toastRef, "Administrador registrado correctamente");
-      if (respuesta.data.contraseniaTemporal) {
-        mostrarContraseniaTemporal(respuesta.data.contraseniaTemporal);
+      if (data.contraseniaTemporal) {
+        mostrarContraseniaTemporal(data.contraseniaTemporal);
       }
       setModalAdmin(false);
       setFormAdmin({ email: "" });
@@ -328,11 +332,11 @@ const GestionUsuarios = () => {
   };
 
   const confirmarCambioEstado = async (usuario) => {
-    if (usuario.rol === "ADMIN") {
+    if (usuario.rol === "ADMIN" && !esSuperAdmin) {
       mostrarErrorApi(toastRef, {
         response: {
           status: 400,
-          data: { message: "No se puede cambiar el estado de un administrador" },
+          data: { message: "Solo el super administrador puede cambiar administradores" },
         },
       });
       return;
@@ -341,13 +345,11 @@ const GestionUsuarios = () => {
     const accion = usuario.estado ? "inactivar" : "activar";
     const resultado = await Swal.fire({
       title: `¿Deseas ${accion} a este usuario?`,
-      html: `<p class="text-sm text-slate-600">El usuario <strong>${
-        usuario.nombre || usuario.email
-      }</strong> ${
-        usuario.estado
+      html: `<p class="text-sm text-slate-600">El usuario <strong>${usuario.nombre || usuario.email
+        }</strong> ${usuario.estado
           ? "perderá temporalmente el acceso al portal hasta ser reactivado."
           : "podrá volver a acceder al sistema normalmente."
-      }</p>`,
+        }</p>`,
       icon: usuario.estado ? "warning" : "question",
       showCancelButton: true,
       confirmButtonText: `Sí, ${accion}`,
@@ -363,9 +365,7 @@ const GestionUsuarios = () => {
 
     if (resultado.isConfirmed) {
       try {
-        await axiosClient.patch(`/usuarios/${usuario.id}/estado`, {
-          estado: !usuario.estado,
-        });
+        await usuarioService.cambiarEstado(usuario.id, !usuario.estado);
         mostrarExitoApi(
           toastRef,
           `Usuario ${usuario.estado ? "inactivado" : "activado"} correctamente`
@@ -377,38 +377,77 @@ const GestionUsuarios = () => {
     }
   };
 
+  const confirmarResetPassword = async (usuario) => {
+    const resultado = await Swal.fire({
+      title: "¿Resetear contraseña?",
+      html: `<p class="text-sm text-slate-600">Se generará una nueva contraseña temporal para el usuario <strong>${usuario.nombre || usuario.email
+        }</strong>.</p>`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, resetear",
+      cancelButtonText: "Cancelar",
+      confirmButtonColor: "#EAB308",
+      cancelButtonColor: "#64748B",
+      customClass: {
+        popup: "rounded-2xl shadow-2xl border border-slate-100 font-sans",
+        confirmButton: "rounded-xl font-semibold px-4 py-2 text-sm",
+        cancelButton: "rounded-xl font-semibold px-4 py-2 text-sm",
+      },
+    });
+
+    if (resultado.isConfirmed) {
+      try {
+        const data = await usuarioService.resetearContrasenia(usuario.id);
+        mostrarExitoApi(toastRef, "Contraseña reseteada correctamente");
+        if (data.contraseniaTemporal) {
+          mostrarContraseniaTemporal(data.contraseniaTemporal);
+        }
+      } catch (error) {
+        mostrarErrorApi(toastRef, error);
+      }
+    }
+  };
+
   const actionBody = (rowData) => {
     const esAdmin = rowData.rol === "ADMIN";
     const estaActivo = rowData.estado;
+    const botonDeshabilitado = esAdmin && !esSuperAdmin;
 
     return (
       <div className="flex items-center gap-2">
+        {rowData.rol !== "PACIENTE" && (
+          <button
+            type="button"
+            onClick={() => confirmarResetPassword(rowData)}
+            title="Resetear contraseña"
+            className="px-2.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all duration-300 shadow-sm border bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100 hover:text-amber-800 active:scale-95"
+          >
+            <i className="pi pi-key text-xs text-amber-600" />
+            <span>Resetear</span>
+          </button>
+        )}
+
         <button
           type="button"
-          disabled={esAdmin}
+          disabled={botonDeshabilitado}
           onClick={() => confirmarCambioEstado(rowData)}
           title={
-            esAdmin
-              ? "No editable"
+            botonDeshabilitado
+              ? "Solo el super admin puede cambiar administradores"
               : estaActivo
-              ? "Clic para inactivar usuario"
-              : "Clic para activar usuario"
+                ? "Clic para inactivar usuario"
+                : "Clic para activar usuario"
           }
-          className={`
-            px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all duration-300 shadow-sm border
-            ${
-              esAdmin
-                ? "bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed opacity-60"
-                : estaActivo
+          className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all duration-300 shadow-sm border ${botonDeshabilitado
+              ? "bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed opacity-60"
+              : estaActivo
                 ? "bg-blue-50/90 text-blue-700 border-blue-200 hover:bg-blue-100 hover:text-blue-800 hover:border-blue-300 active:scale-95"
                 : "bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200 hover:text-slate-800 hover:border-slate-300 active:scale-95"
-            }
-          `}
+            }`}
         >
           <i
-            className={`pi ${
-              estaActivo ? "pi-user-minus text-blue-600" : "pi-user-plus text-slate-600"
-            } text-xs`}
+            className={`pi ${estaActivo ? "pi-user-minus text-blue-600" : "pi-user-plus text-slate-600"
+              } text-xs`}
           />
           <span>{estaActivo ? "Inactivar" : "Activar"}</span>
         </button>
@@ -569,22 +608,20 @@ const GestionUsuarios = () => {
             sortable
             body={(rowData) => (
               <span
-                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${
-                  rowData.estado
-                    ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                    : "bg-slate-100 text-slate-600 border border-slate-200"
-                }`}
+                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${rowData.estado
+                  ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                  : "bg-slate-100 text-slate-600 border border-slate-200"
+                  }`}
               >
                 <span
-                  className={`w-1.5 h-1.5 rounded-full ${
-                    rowData.estado ? "bg-emerald-500" : "bg-slate-400"
-                  }`}
+                  className={`w-1.5 h-1.5 rounded-full ${rowData.estado ? "bg-emerald-500" : "bg-slate-400"
+                    }`}
                 />
                 {rowData.estado ? "Activo" : "Inactivo"}
               </span>
             )}
           />
-          <Column header="Acciones" body={actionBody} style={{ width: "140px" }} />
+          <Column header="Acciones" body={actionBody} style={{ width: "220px" }} />
         </DataTable>
       </div>
 
