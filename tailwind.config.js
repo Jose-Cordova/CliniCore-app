@@ -32,7 +32,7 @@ export default {
           hover: "#1E293B",
           text: "#94A3B8",
         },
-        surface: {
+        surface: {  
           DEFAULT: "#F8FAFC",
           card: "#FFFFFF",
           muted: "#64748B",

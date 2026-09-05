@@ -10,5 +10,10 @@ export const consultaService = {
     obtenerExpediente: async (pacienteId) => {
         const response = await axiosClient.get(`/consultas/paciente/${pacienteId}`);
         return response.data;
-    }
+    },
+     // Trae todo el historial de consultas del paciente (cada una con su citaId)
+    obtenerPorPaciente: async (pacienteId) => {
+        const response = await axiosClient.get(`/consultas/paciente/${pacienteId}`);
+        return response.data;
+    },
 }
