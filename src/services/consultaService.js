@@ -16,4 +16,9 @@ export const consultaService = {
         const response = await axiosClient.get(`/consultas/paciente/${pacienteId}`);
         return response.data;
     },
+    //Enfermera/o registra los signos vitales
+    registrarTiraje: async (tirajeDTO) => {
+        const response = await axiosClient.post("/consultas/tiraje", tirajeDTO);
+        return response.data;
+    }
 }

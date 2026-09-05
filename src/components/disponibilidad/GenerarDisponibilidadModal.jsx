@@ -117,59 +117,78 @@ export default function GenerarDisponiibilidadModal({visible, onHide, doctorId, 
               </div>
             }
             modal
-            className="p-fluid rounded-2xl"
-            footer={dialogoFooter}
+            className="p-fluid"
             onHide={hideDialog}
           >
-            {/* Banner informativo */}
-            <div className="mb-5 p-3.5 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-xl flex items-start gap-3">
-              <i className="pi pi-info-circle text-blue-600 text-base mt-0.5" />
-              <div className="text-xs text-slate-700 leading-relaxed">
-                <p className="font-semibold text-blue-900 mb-0.5">Planificación Semanal</p>
-                <p>Se crearán bloques de 30 min de Lunes a Viernes según tu horario base, omitiendo la hora de almuerzo.</p>
-              </div>
-            </div>
-
-            {/* Grid con los dos selectores de fecha */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="p-3.5 bg-slate-50 border border-slate-200/80 rounded-xl">
-                <label htmlFor="fechaInicio" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                  <i className="pi pi-calendar text-blue-600 text-xs" />
-                  Fecha Inicio*
-                </label>
-                <Calendar
-                  id="fechaInicio"
-                  value={fechaInicio}
-                  onChange={(e) => setFechaInicio(e.value)}
-                  dateFormat="yy-mm-dd"
-                  minDate={new Date()}
-                  showIcon
-                  className={`w-full ${submitted && !fechaInicio ? "p-invalid" : ""}`}
-                  inputClassName="bg-white text-sm font-medium text-slate-800 rounded-lg h-10 px-3 border-slate-300"
-                />
-                {submitted && !fechaInicio && (
-                  <small className="p-error block mt-1.5 text-xs font-medium">La fecha de inicio es requerida.</small>
-                )}
+            <div className="space-y-4 pt-1">
+              {/* Banner informativo */}
+              <div className="p-3.5 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-xl flex items-start gap-3">
+                <i className="pi pi-info-circle text-blue-600 text-base mt-0.5" />
+                <div className="text-xs text-slate-700 leading-relaxed">
+                  <p className="font-semibold text-blue-900 mb-0.5">Planificación Semanal</p>
+                  <p>Se crearán bloques de 30 min de Lunes a Viernes según tu horario base, omitiendo la hora de almuerzo.</p>
+                </div>
               </div>
 
-              <div className="p-3.5 bg-slate-50 border border-slate-200/80 rounded-xl">
-                <label htmlFor="fechaFin" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                  <i className="pi pi-calendar text-indigo-600 text-xs" />
-                  Fecha Fin*
-                </label>
-                <Calendar
-                  id="fechaFin"
-                  value={fechaFin}
-                  onChange={(e) => setFechaFin(e.value)}
-                  dateFormat="yy-mm-dd"
-                  minDate={fechaInicio || new Date()}
-                  showIcon
-                  className={`w-full ${submitted && !fechaFin ? "p-invalid" : ""}`}
-                  inputClassName="bg-white text-sm font-medium text-slate-800 rounded-lg h-10 px-3 border-slate-300"
+              {/* Grid con los dos selectores de fecha */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="p-3.5 bg-slate-50 border border-slate-200/80 rounded-xl">
+                  <label htmlFor="fechaInicio" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                    <i className="pi pi-calendar text-blue-600 text-xs" />
+                    Fecha Inicio*
+                  </label>
+                  <Calendar
+                    id="fechaInicio"
+                    value={fechaInicio}
+                    onChange={(e) => setFechaInicio(e.value)}
+                    dateFormat="yy-mm-dd"
+                    minDate={new Date()}
+                    showIcon
+                    className={`w-full ${submitted && !fechaInicio ? "p-invalid" : ""}`}
+                    inputClassName="bg-white text-sm font-medium text-slate-800 rounded-lg h-10 px-3 border-slate-300"
+                  />
+                  {submitted && !fechaInicio && (
+                    <small className="p-error block mt-1.5 text-xs font-medium">La fecha de inicio es requerida.</small>
+                  )}
+                </div>
+
+                <div className="p-3.5 bg-slate-50 border border-slate-200/80 rounded-xl">
+                  <label htmlFor="fechaFin" className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                    <i className="pi pi-calendar text-indigo-600 text-xs" />
+                    Fecha Fin*
+                  </label>
+                  <Calendar
+                    id="fechaFin"
+                    value={fechaFin}
+                    onChange={(e) => setFechaFin(e.value)}
+                    dateFormat="yy-mm-dd"
+                    minDate={fechaInicio || new Date()}
+                    showIcon
+                    className={`w-full ${submitted && !fechaFin ? "p-invalid" : ""}`}
+                    inputClassName="bg-white text-sm font-medium text-slate-800 rounded-lg h-10 px-3 border-slate-300"
+                  />
+                  {submitted && !fechaFin && (
+                    <small className="p-error block mt-1.5 text-xs font-medium">La fecha de fin es requerida.</small>
+                  )}
+                </div>
+              </div>
+
+              {/* Botones de acción dentro del modal con fondo sólido y borde divisor */}
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-200/80">
+                <Button 
+                  label="Cancelar" 
+                  icon="pi pi-times" 
+                  onClick={hideDialog} 
+                  disabled={loading}
+                  className="px-4 py-2.5 text-xs font-bold rounded-xl bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 transition-all shadow-xs cursor-pointer" 
                 />
-                {submitted && !fechaFin && (
-                  <small className="p-error block mt-1.5 text-xs font-medium">La fecha de fin es requerida.</small>
-                )}
+                <Button 
+                  label={loading ? "Generando..." : "Generar Disponibilidad"} 
+                  icon={loading ? "pi pi-spin pi-spinner" : "pi pi-calendar-plus"} 
+                  onClick={handleGenerar}
+                  loading={loading}
+                  className="px-5 py-2.5 text-xs font-bold rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md shadow-blue-500/20 border-none transition-all cursor-pointer" 
+                />
               </div>
             </div>
           </Dialog>
