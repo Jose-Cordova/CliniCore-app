@@ -14,6 +14,13 @@ import {
 } from "../utils/validaciones";
 
 const RegisterPage = () => {
+  const hoy = new Date();
+  const fechaMaximaNacimiento = new Date(
+    hoy.getFullYear() - 18,
+    hoy.getMonth(),
+    hoy.getDate()
+  );
+
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -102,8 +109,14 @@ const RegisterPage = () => {
         return validarDuiLocal(valor) ? "" : "DUI inválido";
       case "telefono":
         return validarTelefonoElSalvador(valor) ? "" : "Debe tener 8 dígitos";
-      case "fechaNacimiento":
-        return valor ? "" : "La fecha es obligatoria";
+      case "fechaNacimiento": {
+        if (!valor) return "La fecha es obligatoria";
+        const fechaSeleccionada = new Date(valor);
+        if (fechaSeleccionada > fechaMaximaNacimiento) {
+          return "Debes ser mayor de 18 años para registrarte";
+        }
+        return "";
+      }
       case "genero":
         return valor ? "" : "Selecciona un género";
       case "direccion":
@@ -162,7 +175,7 @@ const RegisterPage = () => {
       login(respuesta.data.token);
       mostrarExitoApi(toastRef, "Registro exitoso, ¡bienvenido!");
       navigate("/", { replace: true });
-        } catch (error) {
+    } catch (error) {
       mostrarErrorApi(toastRef, error, "No se pudo completar el registro");
 
       // Si es conflicto (409) por duplicidad
@@ -390,6 +403,10 @@ const RegisterPage = () => {
                     onChange={(e) => manejarCambio("fechaNacimiento", e.value)}
                     dateFormat="yy-mm-dd"
                     showIcon
+                    monthNavigator
+                    yearNavigator
+                    yearRange={`${new Date().getFullYear() - 100}:${new Date().getFullYear() - 18}`}
+                    maxDate={fechaMaximaNacimiento}
                     placeholder="AAAA-MM-DD"
                     className="w-full"
                     inputClassName={`w-full h-10 px-3 text-sm ${claseError("fechaNacimiento")}`}

@@ -8,12 +8,26 @@ const opcionesMenu = [
     etiqueta: "Citas",
     icono: "pi pi-calendar",
     ruta: "/citas",
+    rolesPermitidos: ["DOCTOR", "ADMIN"],
+  },
+  {
+    etiqueta: "Agendar Cita",
+    icono: "pi pi-calendar-plus",
+    ruta: "/citas/agendar",
+    rolesPermitidos: ["PACIENTE"],
+  },
+  {
+    etiqueta: "Mis Citas",
+    icono: "pi pi-clipboard",
+    ruta: "/citas/mis-citas",
+    rolesPermitidos: ["PACIENTE"],
   },
   {
     etiqueta: "Pacientes",
     icono: "pi pi-users",
     ruta: "/pacientes",
     rolesPermitidos: ["ADMIN", "DOCTOR", "RECEPCIONISTA", "PERSONAL"],
+    rolesPermitidos: ["DOCTOR", "PERSONAL", "ADMIN"],
   },
   {
     etiqueta: "Doctores",
@@ -50,7 +64,19 @@ const opcionesMenu = [
     icono: "pi pi-calendar-plus",
     ruta: "/disponibilidad",
     rolesPermitidos: ["DOCTOR"],
-  }
+  },
+  {
+    etiqueta: "Mi Horario",
+    icono: "pi pi-clock",
+    ruta: "/mi-horario",
+    rolesPermitidos: ["DOCTOR"],
+  },
+  {
+    etiqueta: "Triaje",
+    icono: "pi pi-heart",
+    ruta: "/triaje",
+    rolesPermitidos: ["PERSONAL"],
+  },
 ];
 
 const Sidebar = ({ isOpen, onClose }) => {
@@ -72,11 +98,7 @@ const Sidebar = ({ isOpen, onClose }) => {
           : "w-64 -translate-x-full md:w-0 md:translate-x-0 md:overflow-hidden"}
       `}
     >
-      <div className="h-16 flex items-center px-4 border-b border-sidebar-hover shrink-0">
-        <span className="font-bold text-lg whitespace-nowrap text-white">CliniCore</span>
-      </div>
-
-      <nav className="flex-1 overflow-y-auto py-2">
+      <nav className="flex-1 overflow-y-auto py-3">
         {opcionesVisibles.map((opcion) => (
           <div key={opcion.etiqueta}>
             {opcion.submenu ? (
@@ -101,7 +123,8 @@ const Sidebar = ({ isOpen, onClose }) => {
 const EnlaceMenu = ({ opcion, onClose }) => (
   <NavLink
     to={opcion.ruta}
-    end={opcion.ruta === "/"}
+    end
+    //end={opcion.ruta === "/"}
     onClick={onClose}
     className={({ isActive }) =>
       `flex items-center gap-3 px-4 py-3 text-sm transition-colors ${
