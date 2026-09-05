@@ -6,6 +6,7 @@ import { Button } from "primereact/button";
 import { Tag } from "primereact/tag";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
+import { useAuth } from "../../auth/AuthContext";
 import { pacienteService } from "../../services/pacienteService";
 import { consultaService } from "../../services/consultaService";
 import { mostrarErrorApi } from "../../utils/alertasApi";
@@ -27,6 +28,8 @@ const calcularEdad = (fechaNac) => {
 }
 
 export default function PacientesDoctor(){
+    const { usuario } = useAuth();
+    const esPersonal = usuario?.rol === "PERSONAL";
     const toast = useRef(null);
 
     const [pacientes, setPacientes] = useState([]);
@@ -291,32 +294,42 @@ export default function PacientesDoctor(){
                           </div>
                         </div>
 
-                        {/* Diagnóstico */}
-                        <div>
-                          <span className="text-xs font-bold text-blue-900 block mb-1 flex items-center gap-1.5">
-                            <i className="pi pi-file-edit text-blue-600 text-xs" />
-                            Diagnóstico Clínico:
-                          </span>
-                          <p className="text-xs sm:text-sm text-slate-800 m-0 bg-blue-50/50 p-3 rounded-xl border border-blue-100/70 font-medium leading-relaxed">
-                            {c.diagnostico}
-                          </p>
-                        </div>
+                        {/* Diagnóstico y Tratamiento (Solo visible para DOCTOR y ADMIN) */}
+                        {!esPersonal ? (
+                          <>
+                            {/* Diagnóstico */}
+                            <div>
+                              <span className="text-xs font-bold text-blue-900 block mb-1 flex items-center gap-1.5">
+                                <i className="pi pi-file-edit text-blue-600 text-xs" />
+                                Diagnóstico Clínico:
+                              </span>
+                              <p className="text-xs sm:text-sm text-slate-800 m-0 bg-blue-50/50 p-3 rounded-xl border border-blue-100/70 font-medium leading-relaxed">
+                                {c.diagnostico}
+                              </p>
+                            </div>
 
-                        {/* Tratamiento */}
-                        <div>
-                          <span className="text-xs font-bold text-emerald-900 block mb-1 flex items-center gap-1.5">
-                            <i className="pi pi-heart text-emerald-600 text-xs" />
-                            Tratamiento y Receta Médica:
-                          </span>
-                          <p className="text-xs sm:text-sm text-slate-800 m-0 bg-emerald-50/50 p-3 rounded-xl border border-emerald-100/70 font-medium leading-relaxed whitespace-pre-line">
-                            {c.tratamiento}
-                          </p>
-                        </div>
+                            {/* Tratamiento */}
+                            <div>
+                              <span className="text-xs font-bold text-emerald-900 block mb-1 flex items-center gap-1.5">
+                                <i className="pi pi-heart text-emerald-600 text-xs" />
+                                Tratamiento y Receta Médica:
+                              </span>
+                              <p className="text-xs sm:text-sm text-slate-800 m-0 bg-emerald-50/50 p-3 rounded-xl border border-emerald-100/70 font-medium leading-relaxed whitespace-pre-line">
+                                {c.tratamiento}
+                              </p>
+                            </div>
 
-                        {/* Nota */}
-                        {c.nota && (
-                          <div className="text-xs text-slate-600 bg-slate-50 p-2.5 rounded-xl border border-slate-200/60">
-                            <strong className="text-slate-700">Nota / Control:</strong> {c.nota}
+                            {/* Nota */}
+                            {c.nota && (
+                              <div className="text-xs text-slate-600 bg-slate-50 p-2.5 rounded-xl border border-slate-200/60">
+                                <strong className="text-slate-700">Nota / Control:</strong> {c.nota}
+                              </div>
+                            )}
+                          </>
+                        ) : (
+                          <div className="flex items-center gap-2 p-2.5 bg-slate-50 border border-slate-200/70 rounded-xl text-xs text-slate-500 italic">
+                            <i className="pi pi-lock text-slate-400 text-xs" />
+                            <span>Diagnóstico y Tratamiento reservados para el médico tratante.</span>
                           </div>
                         )}
                       </div>

@@ -10,6 +10,8 @@ import DashboardDoctor from "../components/dashboard/DashboardDoctor.jsx";
 import HorarioBaseDoctor from "../components/horario/HorarioBaseDoctor.jsx";
 import CitasDoctor from "../components/citas/CitasDoctor.jsx";
 import PacientesDoctor from "../components/pacientes/PacientesDoctor.jsx"
+import DashboardPersonal from "../components/dashboard/DashboardPersonal.jsx";
+import TirajePaciente from "../components/citas/TriajePaciente.jsx";
 import { useAuth } from "../auth/AuthContext.jsx";
 import CitasPaciente from "../components/citas/CitasPaciente.jsx";
 import MisCitas from "../components/citas/MisCitas.jsx";
@@ -18,6 +20,9 @@ const Inicio = () => {
   const { usuario } = useAuth();
   if (usuario?.rol === "DOCTOR") {
     return <DashboardDoctor />;
+  }
+  if(usuario?.rol === "PERSONAL"){
+    return <DashboardPersonal />
   }
   return <div>Inicio</div>;
 };
@@ -53,6 +58,15 @@ const Router = () => (
         <Route path="/doctores" element={<div>Doctores</div>} />
         <Route path="/especialidades" element={<div>Especialidades</div>} />
         <Route path="/mi-expediente" element={<div>Mi Expediente</div>} />
+
+        <Route
+          path="/triaje"
+          element={
+            <RutaProtegida rolesPermitidos={["PERSONAL", "ADMIN"]}>
+              <TirajePaciente />
+            </RutaProtegida>
+          }
+        />
 
         {/* Ruta de administración de usuarios solo para ADMIN */}
         <Route

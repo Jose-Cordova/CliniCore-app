@@ -8,6 +8,7 @@ const opcionesMenu = [
     etiqueta: "Citas",
     icono: "pi pi-calendar",
     ruta: "/citas",
+    rolesPermitidos: ["DOCTOR", "ADMIN"],
   },
   {
     etiqueta: "Agendar Cita",
@@ -25,6 +26,7 @@ const opcionesMenu = [
     etiqueta: "Pacientes",
     icono: "pi pi-users",
     ruta: "/pacientes",
+    rolesPermitidos: ["DOCTOR", "PERSONAL", "ADMIN"],
   },
   {
     etiqueta: "Doctores",
@@ -61,6 +63,12 @@ const opcionesMenu = [
     icono: "pi pi-clock",
     ruta: "/mi-horario",
     rolesPermitidos: ["DOCTOR"],
+  },
+  {
+    etiqueta: "Triaje",
+    icono: "pi pi-heart",
+    ruta: "/triaje",
+    rolesPermitidos: ["PERSONAL"],
   },
 ];
 

@@ -179,17 +179,27 @@ export default function CitasDoctor() {
     );
   };
 
-  const accionesTemplate = (rowData) => (
-    <div className="flex items-center justify-end gap-2">
-      {rowData.estado === "EN_ESPERA" && (
-        <Button
-          icon="pi pi-stethoscope"
-          label="Atender"
-          size="small"
-          onClick={() => abrirModalConsulta(rowData)}
-          className="px-3 py-1.5 text-xs font-bold rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-sm border-none transition-all"
-        />
-      )}
+  const accionesTemplate = (rowData) => {
+    const esHoy = rowData.fecha === new Date().toISOString().split("T")[0];
+
+    return (
+      <div className="flex items-center justify-end gap-2">
+        {rowData.estado === "EN_ESPERA" && (
+          esHoy ? (
+            <Button
+              icon="pi pi-user-md"
+              label="Atender"
+              size="small"
+              onClick={() => abrirModalConsulta(rowData)}
+              className="px-3 py-1.5 text-xs font-bold rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-sm border-none transition-all cursor-pointer"
+            />
+          ) : (
+            <span className="text-[11px] font-medium text-amber-600 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200 flex items-center gap-1">
+              <i className="pi pi-calendar text-[10px]" />
+              <span>Cita de otra fecha</span>
+            </span>
+          )
+        )}
       {rowData.estado === "ATENDIDA" && (
         <span className="text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200 flex items-center gap-1">
           <i className="pi pi-check text-[10px]" />
@@ -206,7 +216,8 @@ export default function CitasDoctor() {
         <span className="text-[11px] text-purple-600 font-medium">Reasignada</span>
       )}
     </div>
-  );
+    );
+  };
 
   // Header de la tabla con barra de filtros y buscador moderno
   const header = (
@@ -307,7 +318,7 @@ export default function CitasDoctor() {
         header={
           <div className="flex items-center gap-3.5">
             <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-600 via-teal-600 to-cyan-600 text-white flex items-center justify-center shadow-md shadow-emerald-500/20 text-lg">
-              <i className="pi pi-stethoscope" />
+              <i className="pi pi-user-md" />
             </div>
             <div>
               <span className="text-base font-bold font-display text-slate-900 block leading-tight">

@@ -34,4 +34,9 @@ export const citaService = {
         const response = await axiosClient.put(`/citas/${citaId}/cancelar`);
         return response.data;
     },
+    //Obtener todas las citas
+    obtenerTodas: async () => {
+        const response = await axiosClient.get("/citas");
+        return response.data;
+    }
 }
