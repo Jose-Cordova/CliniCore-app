@@ -18,7 +18,7 @@ import { Toolbar } from 'primereact/toolbar';
 import { ConfirmDialog } from 'primereact/confirmdialog';
 import { IconField } from 'primereact/iconfield';
 import { InputIcon } from 'primereact/inputicon';
-
+import { InputTextarea } from 'primereact/inputtextarea';
 // Configuración del idioma español para PrimeReact
 addLocale('es', {
   startsWith: 'Empieza con',
@@ -119,5 +119,6 @@ export {
   ConfirmDialog,
   IconField,
   InputIcon,
+  InputTextarea,
   // ... más componentes
 };

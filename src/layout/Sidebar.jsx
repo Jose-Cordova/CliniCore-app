@@ -10,6 +10,18 @@ const opcionesMenu = [
     ruta: "/citas",
   },
   {
+    etiqueta: "Agendar Cita",
+    icono: "pi pi-calendar-plus",
+    ruta: "/citas/agendar",
+    rolesPermitidos: ["PACIENTE"],
+  },
+  {
+    etiqueta: "Mis Citas",
+    icono: "pi pi-clipboard",
+    ruta: "/citas/mis-citas",
+    rolesPermitidos: ["PACIENTE"],
+  },
+  {
     etiqueta: "Pacientes",
     icono: "pi pi-users",
     ruta: "/pacientes",
@@ -96,7 +108,8 @@ const Sidebar = ({ isOpen, onClose }) => {
 const EnlaceMenu = ({ opcion, onClose }) => (
   <NavLink
     to={opcion.ruta}
-    end={opcion.ruta === "/"}
+    end
+    //end={opcion.ruta === "/"}
     onClick={onClose}
     className={({ isActive }) =>
       `flex items-center gap-3 px-4 py-3 text-sm transition-colors ${

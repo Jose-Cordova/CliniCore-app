@@ -4,13 +4,15 @@ import LoginPage from "../auth/Login.jsx";
 import RegisterPage from "../auth/Register.jsx";
 import RutaProtegida from "../auth/RutaProtegida.jsx";
 import CambiarContrasenia from "../auth/CambiarContrasenia.jsx";
-import GestionUsuarios from "../components/usuarios/GestionUsuarios.jsx"; // ajusta según tu estructura
+import GestionUsuarios from "../components/usuarios/GestionUsuarios.jsx";
 import DisponibilidadDoctor from "../components/disponibilidad/DisponibilidadDoctor.jsx";
 import DashboardDoctor from "../components/dashboard/DashboardDoctor.jsx";
 import HorarioBaseDoctor from "../components/horario/HorarioBaseDoctor.jsx";
 import CitasDoctor from "../components/citas/CitasDoctor.jsx";
 import PacientesDoctor from "../components/pacientes/PacientesDoctor.jsx"
 import { useAuth } from "../auth/AuthContext.jsx";
+import CitasPaciente from "../components/citas/CitasPaciente.jsx";
+import MisCitas from "../components/citas/MisCitas.jsx";
 
 const Inicio = () => {
   const { usuario } = useAuth();
@@ -63,7 +65,27 @@ const Router = () => (
         />
         <Route path="/disponibilidad" element={<DisponibilidadDoctor />} />
         <Route path="/mi-horario" element={<HorarioBaseDoctor />} />
+
+          <Route
+    path="/citas/agendar"
+    element={
+      <RutaProtegida rolesPermitidos={["PACIENTE"]}>
+        <CitasPaciente />
+      </RutaProtegida>
+    }
+  />
+  <Route
+    path="/citas/mis-citas"
+    element={
+      <RutaProtegida rolesPermitidos={["PACIENTE"]}>
+        <MisCitas />
+      </RutaProtegida>
+    }
+  />
       </Route>
+
+      {/*Rutas protegida para el PACIENTE*/ }
+    
 
       {/* Redirección por defecto */}
       <Route path="*" element={<Navigate to="/" replace />} />
