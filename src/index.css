@@ -64,7 +64,19 @@
   }
 
   .p-dialog .p-dialog-header {
-    @apply bg-slate-50/80 px-6 py-4 border-b border-slate-100;
+    @apply px-6 py-4 relative overflow-hidden;
+    background: rgba(255, 255, 255, 0.25) !important;
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.7);
+  }
+
+  .p-dialog .p-dialog-header::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 60%);
+    pointer-events: none;
   }
 
   .p-dialog .p-dialog-content {

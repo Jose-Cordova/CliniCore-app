@@ -13,6 +13,7 @@ const opcionesMenu = [
     etiqueta: "Pacientes",
     icono: "pi pi-users",
     ruta: "/pacientes",
+    rolesPermitidos: ["ADMIN", "DOCTOR", "RECEPCIONISTA", "PERSONAL"],
   },
   {
     etiqueta: "Doctores",
@@ -30,6 +31,12 @@ const opcionesMenu = [
     etiqueta: "Mi Expediente",
     icono: "pi pi-book",
     ruta: "/mi-expediente",
+    rolesPermitidos: ["PACIENTE"],
+  },
+  {
+    etiqueta: "Mis Consultas",
+    icono: "pi pi-folder-open",
+    ruta: "/mis-consultas",
     rolesPermitidos: ["PACIENTE"],
   },
   {

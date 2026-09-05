@@ -7,12 +7,18 @@ import CambiarContrasenia from "../auth/CambiarContrasenia.jsx";
 import GestionUsuarios from "../components/usuarios/GestionUsuarios.jsx"; // ajusta según tu estructura
 import DisponibilidadDoctor from "../components/disponibilidad/DisponibilidadDoctor.jsx";
 import DashboardDoctor from "../components/dashboard/DashboardDoctor.jsx";
+import DashboardPaciente from "../components/dashboard/DashboardPaciente.jsx";
+import PerfilPaciente from "../components/pacientes/PerfilPaciente.jsx";
+import MisConsultasPaciente from "../components/consultas/MisConsultasPaciente.jsx";
 import { useAuth } from "../auth/AuthContext.jsx";
 
 const Inicio = () => {
   const { usuario } = useAuth();
   if (usuario?.rol === "DOCTOR") {
     return <DashboardDoctor />;
+  }
+  if (usuario?.rol === "PACIENTE") {
+    return <DashboardPaciente />;
   }
   return <div>Inicio</div>;
 };
@@ -44,10 +50,25 @@ const Router = () => (
       >
         <Route path="/" element={<Inicio />} />
         <Route path="/citas" element={<div>Citas</div>} />
-        <Route path="/pacientes" element={<div>Pacientes</div>} />
+        <Route
+          path="/pacientes"
+          element={
+            <RutaProtegida rolesPermitidos={["ADMIN", "DOCTOR", "RECEPCIONISTA", "PERSONAL"]}>
+              <div>Pacientes</div>
+            </RutaProtegida>
+          }
+        />
         <Route path="/doctores" element={<div>Doctores</div>} />
         <Route path="/especialidades" element={<div>Especialidades</div>} />
-        <Route path="/mi-expediente" element={<div>Mi Expediente</div>} />
+        <Route path="/mi-expediente" element={<PerfilPaciente />} />
+        <Route
+          path="/mis-consultas"
+          element={
+            <RutaProtegida rolesPermitidos={["PACIENTE"]}>
+              <MisConsultasPaciente />
+            </RutaProtegida>
+          }
+        />
 
         {/* Ruta de administración de usuarios solo para ADMIN */}
         <Route
