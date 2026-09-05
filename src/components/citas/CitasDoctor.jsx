@@ -8,8 +8,8 @@ import { Dialog } from "primereact/dialog";
 import { InputTextarea } from "primereact/inputtextarea";
 import { InputText } from "primereact/inputtext";
 import { useAuth } from "../../auth/AuthContext";
-import { citaService } from "../../services/citaService";
-import { consultaService } from "../../services/consultaService";
+import citaService  from "../../services/citaService";
+import consultaService  from "../../services/consultaService";
 import { mostrarExitoApi, mostrarErrorApi, mostrarAdvertenciaApi } from "../../utils/alertasApi";
 
 const ESTADO_CONFIG = {
