@@ -20,5 +20,13 @@ export const consultaService = {
     registrarTiraje: async (tirajeDTO) => {
         const response = await axiosClient.post("/consultas/tiraje", tirajeDTO);
         return response.data;
+    },
+    // NUEVO: Obtiene el historial de consultas realizadas por un doctor
+    obtenerConsultasPorDoctor: async (doctorId) => {
+        const response = await axiosClient.get(`/consultas/doctor/${doctorId}`);
+        return response.data;
     }
 }
+
+  
+

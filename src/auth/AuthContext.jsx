@@ -6,6 +6,7 @@ import axiosClient from "../services/axiosClient";
 const AuthContext = createContext(null);
 
 const mapearPayload = (payload) => ({
+  id: payload.id,
   email: payload.sub,
   nombre: payload.nombre,
   tipo: payload.tipo,
