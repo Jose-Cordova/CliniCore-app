@@ -26,6 +26,7 @@ const Inicio = () => {
   }
   if (usuario?.rol === "PACIENTE") {
     return <DashboardPaciente />;
+  }
   if(usuario?.rol === "PERSONAL"){
     return <DashboardPersonal />
   }
@@ -120,4 +121,4 @@ const Router = () => (
   </BrowserRouter>
 );
 
-export default Router;
+export default Router

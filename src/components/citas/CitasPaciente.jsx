@@ -4,7 +4,7 @@ import {
 import { listarEspecialidades } from "../../services/especialidadesService";
 import { doctorService } from "../../services/doctorService";
 import { disponibilidadServie } from "../../services/disponibilidadService";
-import { citaService } from "../../services/citaService";
+import  citaService from "../../services/citaService";
 
 const CitasPaciente = () => {
   const toast = useRef(null);

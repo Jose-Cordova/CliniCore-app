@@ -7,8 +7,8 @@ import { Tag } from "primereact/tag";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { useAuth } from "../../auth/AuthContext";
-import { pacienteService } from "../../services/pacienteService";
-import { consultaService } from "../../services/consultaService";
+import  pacienteService  from "../../services/pacienteService";
+import  consultaService  from "../../services/consultaService";
 import { mostrarErrorApi } from "../../utils/alertasApi";
 
 const getIniciales = (nombre, apellido) => {

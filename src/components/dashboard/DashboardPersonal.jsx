@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "primereact/button";
 import { Tag } from "primereact/tag";
 import { useAuth } from "../../auth/AuthContext";
-import { citaService } from "../../services/citaService";
+import citaService  from "../../services/citaService";
 
 const getIniciales = (nombre) => {
     if(!nombre) return "P";

@@ -12,6 +12,7 @@ import { obtenerCitasPorPaciente, cancelarCitaPaciente } from "../../services/ci
 import { obtenerConsultasPorPaciente } from "../../services/consultaService";
 import { mostrarExitoApi, mostrarErrorApi } from "../../utils/alertasApi";
 
+
 const DashboardPaciente = () => {
   const { usuario } = useAuth();
   const navigate = useNavigate();

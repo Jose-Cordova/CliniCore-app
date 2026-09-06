@@ -2,8 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { Button, Dialog, Toast, ConfirmDialog } from "../../config/primeReact";
 import { confirmDialog } from "primereact/confirmdialog";
 import { useAuth } from "../../auth/AuthContext";
-import { citaService } from "../../services/citaService";
-import { consultaService } from "../../services/consultaService";
+import  citaService  from "../../services/citaService";
+import  consultaService  from "../../services/consultaService";
 
 const ESTADO_ESTILOS = {
   PENDIENTE: "bg-amber-50 text-amber-700",
