@@ -38,8 +38,8 @@ const MisCitas = () => {
     setCargando(true);
     try {
       const [citasData, consultasData] = await Promise.all([
-        citaService.obtenerPorPaciente(usuario.pacienteId),
-        consultaService.obtenerPorPaciente(usuario.pacienteId),
+        citaService.obtenerCitasPorPaciente(usuario.pacienteId),
+        consultaService.obtenerConsultasPorPaciente(usuario.pacienteId),
       ]);
       setCitas(citasData);
       setConsultas(consultasData);
