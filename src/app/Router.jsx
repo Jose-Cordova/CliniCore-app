@@ -19,6 +19,7 @@ import { useAuth } from "../auth/AuthContext.jsx";
 import CitasPaciente from "../components/citas/CitasPaciente.jsx";
 import MisCitas from "../components/citas/MisCitas.jsx";
 import DashboardAdmin from "../components/dashboard/DashboardAdmin.jsx";
+import CatalogoDoctores from "../components/usuarios/CatalogoDoctores.jsx";
 
 const Inicio = () => {
   const { usuario } = useAuth();
@@ -64,7 +65,14 @@ const Router = () => (
         <Route path="/" element={<Inicio />} />
         <Route path="/citas" element={<CitasDoctor />} />
         <Route path="/pacientes" element={<PacientesDoctor />} />
-        <Route path="/doctores" element={<div>Doctores</div>} />
+        <Route
+          path="/doctores"
+          element={
+            <RutaProtegida rolesPermitidos={["ADMIN"]}>
+              <CatalogoDoctores />
+            </RutaProtegida>
+          }
+        />
         <Route path="/especialidades" element={<div>Especialidades</div>} />
         <Route path="/mi-expediente" element={<PerfilPaciente />} />
         <Route
