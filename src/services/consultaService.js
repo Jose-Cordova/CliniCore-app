@@ -41,7 +41,7 @@ export const obtenerTodas = async () => {
     }
 };
 
-const consultaService = {
+export const consultaService = {
     finalizarConsulta,
     obtenerExpediente,
     obtenerConsultasPorPaciente,
