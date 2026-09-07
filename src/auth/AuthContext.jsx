@@ -73,6 +73,13 @@ export const AuthProvider = ({ children }) => {
     [sesion.usuario]
   );
 
+   const actualizarUsuario = useCallback((datosActualizados) => {
+  setSesion((prev) => ({
+    ...prev,
+    usuario: { ...prev.usuario, ...datosActualizados },
+  }));
+}, []);
+
   const value = {
     usuario: sesion.usuario,
     token: sesion.token,
@@ -82,6 +89,7 @@ export const AuthProvider = ({ children }) => {
     logout,
     cambiarContrasenia,
     tienePermiso,
+    actualizarUsuario,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

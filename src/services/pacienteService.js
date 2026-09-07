@@ -2,8 +2,13 @@ import axiosClient from "./axiosClient";
 
 // Obtener todos los pacientes
 export const obtenerTodos = async () => {
-    const response = await axiosClient.get("/pacientes");
-    return response.data;
+    try {
+        const response = await axiosClient.get("/pacientes");
+        return response.data || [];
+    } catch (error) {
+        console.warn("No se pudieron cargar los pacientes (/pacientes):", error?.message);
+        return [];
+    }
 };
 
 // Obtener pacientes por id
@@ -18,18 +23,19 @@ export const obtenerPorCodigoExpediente = async (codigoExpediente) => {
     return response.data;
 };
 
-// NUEVO: Actualiza los datos del paciente (nombre, DUI, teléfono, dirección, etc.)
+// Actualiza los datos del paciente
 export const actualizarPaciente = async (id, datosPaciente) => {
     const response = await axiosClient.put(`/pacientes/${id}`, datosPaciente);
     return response.data;
 };
 
-// NUEVO: Cambia el estado de archivado de un expediente (true/false)
+// Cambia el estado de archivado de un expediente
 export const cambiarEstadoArchivado = async (id, archivado) => {
     const response = await axiosClient.patch(`/pacientes/${id}/archivado`, { archivado });
     return response.data;
 };
-     const pacienteService = {
+
+const pacienteService = {
     obtenerTodos,
     obtenerPacientePorId,
     obtenerPorCodigoExpediente,

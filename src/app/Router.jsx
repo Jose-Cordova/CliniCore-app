@@ -18,19 +18,22 @@ import TirajePaciente from "../components/citas/TriajePaciente.jsx";
 import { useAuth } from "../auth/AuthContext.jsx";
 import CitasPaciente from "../components/citas/CitasPaciente.jsx";
 import MisCitas from "../components/citas/MisCitas.jsx";
+import DashboardAdmin from "../components/dashboard/DashboardAdmin.jsx";
 
 const Inicio = () => {
   const { usuario } = useAuth();
-  if (usuario?.rol === "DOCTOR") {
-    return <DashboardDoctor />;
+  switch (usuario?.rol) {
+    case "DOCTOR":
+      return <DashboardDoctor />;
+    case "PACIENTE":
+      return <DashboardPaciente />;
+    case "PERSONAL":
+      return <DashboardPersonal />;
+    case "ADMIN":
+      return <DashboardAdmin />; 
+    default:
+      return <div>Inicio</div>;
   }
-  if (usuario?.rol === "PACIENTE") {
-    return <DashboardPaciente />;
-  }
-  if(usuario?.rol === "PERSONAL"){
-    return <DashboardPersonal />
-  }
-  return <div>Inicio</div>;
 };
 
 const Router = () => (

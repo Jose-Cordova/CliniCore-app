@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { useAuth } from "../auth/AuthContext";
+import ModalPerfil from "../components/perfil/ModalPerfil";
 
 const getRolBadgeColor = (rol) => {
   switch (rol) {
@@ -25,6 +27,7 @@ const getIniciales = (nombre) => {
 
 const Navbar = ({ onToggleSidebar }) => {
   const { usuario, logout } = useAuth();
+  const [modalPerfil, setModalPerfil] = useState(false);
 
   return (
     <header className="sticky top-0 z-30 h-16 flex items-center justify-between px-4 md:px-6 bg-gradient-to-r from-slate-900 via-sidebar to-slate-900 border-b border-slate-800 text-white shadow-md shrink-0">
@@ -56,7 +59,11 @@ const Navbar = ({ onToggleSidebar }) => {
 
       {/* Lado derecho: Info de Usuario, Avatar y Botón de Salir */}
       <div className="flex items-center gap-3 sm:gap-4">
-        <div className="flex items-center gap-3 bg-white/5 border border-slate-700/60 rounded-2xl py-1.5 px-3">
+        <button
+          onClick={() => setModalPerfil(true)}
+          className="flex items-center gap-3 bg-white/5 border border-slate-700/60 rounded-2xl py-1.5 px-3 hover:bg-white/10 hover:border-slate-600 transition-all active:scale-95"
+          title="Ver mi perfil"
+        >
           {/* Avatar con iniciales */}
           <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center text-xs font-bold shadow-sm">
             {getIniciales(usuario?.nombre)}
@@ -74,7 +81,7 @@ const Navbar = ({ onToggleSidebar }) => {
               {usuario?.rol || "INVITADO"}
             </span>
           </div>
-        </div>
+        </button>
 
         {/* Botón Salir */}
         <button
@@ -86,6 +93,9 @@ const Navbar = ({ onToggleSidebar }) => {
           <i className="pi pi-sign-out text-base" />
         </button>
       </div>
+
+      {/* Modal de Perfil */}
+      <ModalPerfil visible={modalPerfil} onHide={() => setModalPerfil(false)} />
     </header>
   );
 };

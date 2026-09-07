@@ -3,8 +3,13 @@ import axiosClient from "./axiosClient";
 export const doctorService = {
     // Obtener todos los doctores
     listarTodos: async () => {
-        const response = await axiosClient.get("/doctores");
-        return response.data;
+        try {
+            const response = await axiosClient.get("/doctores");
+            return response.data || [];
+        } catch (error) {
+            console.warn("No se pudieron cargar todos los doctores (/doctores):", error?.message);
+            return [];
+        }
     },
 
     // Obtener un doctor por id
@@ -13,3 +18,5 @@ export const doctorService = {
         return response.data;
     },
 };
+
+export default doctorService;

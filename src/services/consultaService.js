@@ -13,7 +13,6 @@ export const obtenerExpediente = async (pacienteId) => {
 };
 
 // Trae todo el historial de consultas del paciente (cada una con su citaId)
-// NUEVO: Se renombra para que coincida exactamente con la importación del Dashboard
 export const obtenerConsultasPorPaciente = async (pacienteId) => {
     const response = await axiosClient.get(`/consultas/paciente/${pacienteId}`);
     return response.data;
@@ -25,10 +24,21 @@ export const registrarTiraje = async (tirajeDTO) => {
     return response.data;
 };
 
-// NUEVO: Obtiene el historial de consultas realizadas por un doctor
+// Obtiene el historial de consultas realizadas por un doctor
 export const obtenerConsultasPorDoctor = async (doctorId) => {
     const response = await axiosClient.get(`/consultas/doctor/${doctorId}`);
     return response.data;
+};
+
+// Obtener todas las consultas (para estadísticas globales)
+export const obtenerTodas = async () => {
+    try {
+        const response = await axiosClient.get("/consultas");
+        return response.data || [];
+    } catch (error) {
+        console.warn("No se pudieron cargar todas las consultas (endpoint /consultas):", error?.message);
+        return [];
+    }
 };
 
 const consultaService = {
@@ -37,6 +47,7 @@ const consultaService = {
     obtenerConsultasPorPaciente,
     registrarTiraje,
     obtenerConsultasPorDoctor,
+    obtenerTodas,
 };
 
 export default consultaService;

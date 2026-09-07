@@ -23,25 +23,28 @@ export const agendarCita = async ({ disponibilidadId, motivo }) => {
     return response.data;
 };
 
-// NUEVO - Ajustamos el nombre para que coincida con lo que busca tu componente
 export const obtenerCitasPorPaciente = async (pacienteId) => {
     const response = await axiosClient.get(`/citas/paciente/${pacienteId}`);
     return response.data;
 };
 
-// NUEVO - Ajustamos el nombre para que coincida con lo que busca tu componente
 export const cancelarCitaPaciente = async (citaId) => {
     const response = await axiosClient.put(`/citas/${citaId}/cancelar`);
     return response.data;
 };
 
-// Obtener todas las citas
+// Obtener todas las citas (para estadísticas globales)
 export const obtenerTodas = async () => {
-    const response = await axiosClient.get("/citas");
-    return response.data;
+    try {
+        const response = await axiosClient.get("/citas");
+        return response.data || [];
+    } catch (error) {
+        console.warn("No se pudieron cargar todas las citas (/citas):", error?.message);
+        return [];
+    }
 };
- // agregado 
- const citaService = {
+
+const citaService = {
     obtenerPorDoctor,
     cambiarEstado,
     agendarCita,
