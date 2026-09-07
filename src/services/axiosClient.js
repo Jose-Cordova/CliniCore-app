@@ -2,7 +2,7 @@ import axios from "axios";
 import { CLAVE_TOKEN } from "../utils/constants";
 
 const axiosClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8080/api",
 });
 
 axiosClient.interceptors.request.use((config) => {
@@ -17,9 +17,10 @@ axiosClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem(CLAVE_TOKEN);
-      if (window.location.pathname !== "/login") {
-        window.location.href = "/login";
+      const url = error.config?.url || "";
+      // Prevenir bucles de redirección si falla la autenticación de login
+      if (!url.includes("/auth/login")) {
+        console.warn("Respuesta 401 recibida de la API para:", url);
       }
     }
     return Promise.reject(error);

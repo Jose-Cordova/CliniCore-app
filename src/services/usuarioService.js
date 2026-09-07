@@ -48,6 +48,18 @@ const usuarioService = {
     const resp = await axiosClient.post("/auth/cambiar-contrasenia", { nuevaContrasenia });
     return resp.data;
   },
+
+  // Obtener perfil del usuario autenticado
+  obtenerPerfil: async () => {
+    const resp = await axiosClient.get("/usuarios/perfil");
+    return resp.data;
+  },
+
+  // Actualizar perfil del usuario autenticado
+  actualizarPerfil: async (datos) => {
+    const resp = await axiosClient.put("/usuarios/perfil", datos);
+    return resp.data;
+  },
 };
 
 export default usuarioService;
