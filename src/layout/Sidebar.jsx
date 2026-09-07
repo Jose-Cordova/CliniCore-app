@@ -30,7 +30,7 @@ const opcionesMenu = [
   },
   {
     etiqueta: "Doctores",
-    icono: "pi pi-user-md",
+    icono: "pi pi-user",
     ruta: "/doctores",
     rolesPermitidos: ["ADMIN"],
   },

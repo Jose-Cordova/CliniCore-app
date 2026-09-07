@@ -1,7 +1,7 @@
 import axiosClient from "./axiosClient";
 
 export const doctorService = {
-    // Obtener todos los doctores
+    //Obtener todos los doctores
     listarTodos: async () => {
         try {
             const response = await axiosClient.get("/doctores");
@@ -12,7 +12,7 @@ export const doctorService = {
         }
     },
 
-    // Obtener un doctor por id
+    //Obtener un doctor por id
     obtenerPorId: async (id) => {
         const response = await axiosClient.get(`/doctores/${id}`);
         return response.data;
