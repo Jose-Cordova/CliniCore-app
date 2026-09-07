@@ -53,8 +53,8 @@ const opcionesMenu = [
     rolesPermitidos: ["PACIENTE"],
   },
   {
-    etiqueta: "Gestion de Usuarios",           // ✅ nueva opción
-    icono: "pi pi-user-edit",      // icono de gestión de usuarios
+    etiqueta: "Gestion de Usuarios",           
+    icono: "pi pi-user-edit",     
     ruta: "/usuarios",
     rolesPermitidos: ["ADMIN"],    // solo visible para administradores
   },
