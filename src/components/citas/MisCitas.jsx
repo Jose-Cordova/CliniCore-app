@@ -81,14 +81,15 @@ const confirmarCancelar = (cita) => {
     icon: null,
     acceptLabel: "Sí, cancelar",
     rejectLabel: "No",
-    acceptClassName: "!bg-red-500 hover:!bg-red-600 !border-none !text-white !font-semibold !rounded-full !px-6 !py-2",
+    acceptClassName: "!bg-red-500 hover:!bg-red-600 !border-none !text-white !font-semibold !rounded-full !px-6 !py-2 focus:!ring-0 focus:!outline-none",
     rejectClassName: "p-button-text !text-slate-700 !font-semibold hover:!bg-slate-50 !rounded-full !px-4 !py-2",
     accept: () => cancelarCita(cita.id),
     pt: {
       root: { className: "rounded-md overflow-hidden shadow-soft-xl !w-[32rem] max-w-[92vw]" },
-      header: { className: "bg-primary text-white px-8 py-6" },
+      header: { className: "!bg-slate-900 !text-white px-8 py-6" }, 
       headerTitle: { className: "text-white font-semibold text-xl" },
-      closeButton: { className: "text-white hover:bg-primary-hover" },
+      closeButton: { className: "text-white hover:bg-slate-800" },
+      closeButtonIcon: { className: "text-white" },
       content: { className: "bg-white px-8 py-8 text-slate-700 text-lg" },
       footer: {
         className: "bg-white px-8 py-5 flex justify-end items-center gap-4 border-t border-surface-border",
@@ -166,50 +167,69 @@ const confirmarCancelar = (cita) => {
           <p className="text-surface-muted text-sm">Aún no tienes citas agendadas.</p>
         )}
 
-        <div className="flex flex-col gap-4 max-h-[70vh] overflow-y-auto pr-1">
-          {citas.map((cita) => (
-            <div
-              key={cita.id}
-              className="border border-surface-border rounded-xl p-4 flex items-center justify-between gap-4 shadow-soft"
-            >
-              <div className="flex-1">
-                <h3 className="font-bold text-slate-800">{cita.motivo}</h3>
-               <p className="text-surface-muted text-sm">
-                Dr(a). {cita.doctorNombre || "—"}
-                {cita.fecha && ` · ${formatearFechaLegible(cita.fecha)}`}
-                {cita.horaInicio && ` · ${formatearHora(cita.horaInicio)}`}
-                {cita.horaFin && `-${formatearHora(cita.horaFin)}`}
-              </p>
+       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[70vh] overflow-y-auto pr-1">
+  {citas.map((cita) => {
+    const fechaObj = cita.fecha ? new Date(...cita.fecha.split("-").map((n, i) => (i === 1 ? n - 1 : n))) : null;
+    const dia = fechaObj ? String(fechaObj.getDate()).padStart(2, "0") : "--";
+    const mes = fechaObj
+      ? fechaObj.toLocaleDateString("es-ES", { month: "short" }).replace(".", "").toUpperCase()
+      : "";
 
-                <div className="mt-3">
-                  {cita.estado === "PENDIENTE" && (
-                    <Button
-                      label="Cancelar cita"
-                      className="p-button-outlined p-button-danger text-sm py-1.5 px-3 rounded-lg"
-                      onClick={() => confirmarCancelar(cita)}
-                      loading={cancelandoId === cita.id}
-                    />
-                  )}
-                  {cita.estado === "ATENDIDA" && (
-                    <Button
-                      label="Ver resumen de consulta"
-                      className="p-button-outlined text-sm py-1.5 px-3 rounded-lg"
-                      onClick={() => abrirResumenConsulta(cita)}
-                    />
-                  )}
-                </div>
-              </div>
+    return (
+      <div
+        key={cita.id}
+        className="border border-surface-border rounded-xl shadow-soft overflow-hidden flex flex-col"
+      >
+        <div className="flex gap-3 p-4">
+          {/* Badge de fecha */}
+          <div className="flex flex-col items-center justify-center bg-primary-50 text-primary rounded-lg w-14 h-14 shrink-0">
+            <span className="text-lg font-bold leading-none">{dia}</span>
+            <span className="text-[10px] font-semibold uppercase mt-0.5">{mes}</span>
+          </div>
 
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between gap-2">
+              <h3 className="font-bold text-slate-800 text-sm leading-tight">
+                {cita.motivo}
+              </h3>
               <span
-                className={`text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap ${
+                className={`shrink-0 text-[11px] font-semibold px-2.5 py-1 rounded-full whitespace-nowrap ${
                   ESTADO_ESTILOS[cita.estado] || "bg-slate-100 text-slate-600"
                 }`}
               >
                 {ESTADO_LABELS[cita.estado] || cita.estado}
               </span>
             </div>
-          ))}
+
+            <p className="text-surface-muted text-xs mt-1">
+              Dr(a). {cita.doctorNombre || "—"}
+              {cita.horaInicio && ` · ${formatearHora(cita.horaInicio)}`}
+              {cita.horaFin && `-${formatearHora(cita.horaFin)}`}
+            </p>
+          </div>
         </div>
+
+        <div className="px-4 pb-4 mt-auto">
+          {cita.estado === "PENDIENTE" && (
+            <Button
+              label="Cancelar cita"
+              className="!bg-red-500 hover:!bg-red-600 !border-none !text-white !font-semibold text-xs py-2 px-3 rounded-lg w-full focus:!ring-0 focus:!outline-none"
+              onClick={() => confirmarCancelar(cita)}
+              loading={cancelandoId === cita.id}
+            />
+          )}
+          {cita.estado === "ATENDIDA" && (
+            <Button
+              label="Ver resumen de consulta"
+              className="p-button-outlined text-xs py-1.5 px-3 rounded-lg w-full"
+              onClick={() => abrirResumenConsulta(cita)}
+            />
+          )}
+        </div>
+      </div>
+    );
+  })}
+</div>
       </div>
 
       <Dialog

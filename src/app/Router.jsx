@@ -19,6 +19,7 @@ import { useAuth } from "../auth/AuthContext.jsx";
 import CitasPaciente from "../components/citas/CitasPaciente.jsx";
 import MisCitas from "../components/citas/MisCitas.jsx";
 import DashboardAdmin from "../components/dashboard/DashboardAdmin.jsx";
+import Especialidades from "../components/especialidad/Especialidades.jsx";
 import CatalogoDoctores from "../components/usuarios/CatalogoDoctores.jsx";
 
 const Inicio = () => {
@@ -65,6 +66,7 @@ const Router = () => (
         <Route path="/" element={<Inicio />} />
         <Route path="/citas" element={<CitasDoctor />} />
         <Route path="/pacientes" element={<PacientesDoctor />} />
+        <Route path="/doctores" element={<div>Doctores</div>} />
         <Route
           path="/doctores"
           element={
@@ -84,6 +86,14 @@ const Router = () => (
           }
         />
 
+          <Route
+  path="/especialidades"
+  element={
+    <RutaProtegida rolesPermitidos={["ADMIN"]}>
+      <Especialidades />
+    </RutaProtegida>
+  }
+/>
         <Route
           path="/triaje"
           element={
