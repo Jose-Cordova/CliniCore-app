@@ -66,7 +66,6 @@ const Router = () => (
         <Route path="/" element={<Inicio />} />
         <Route path="/citas" element={<CitasDoctor />} />
         <Route path="/pacientes" element={<PacientesDoctor />} />
-        <Route path="/doctores" element={<div>Doctores</div>} />
         <Route
           path="/doctores"
           element={
@@ -75,7 +74,6 @@ const Router = () => (
             </RutaProtegida>
           }
         />
-        <Route path="/especialidades" element={<div>Especialidades</div>} />
         <Route path="/mi-expediente" element={<PerfilPaciente />} />
         <Route
           path="/mis-consultas"
