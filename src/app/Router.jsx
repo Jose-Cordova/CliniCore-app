@@ -64,7 +64,14 @@ const Router = () => (
         }
       >
         <Route path="/" element={<Inicio />} />
-        <Route path="/citas" element={<CitasDoctor />} />
+        <Route
+          path="/citas"
+          element={
+            <RutaProtegida rolesPermitidos={["DOCTOR"]}>
+              <CitasDoctor />
+            </RutaProtegida>
+          }
+        />
         <Route path="/pacientes" element={<PacientesDoctor />} />
         <Route
           path="/doctores"

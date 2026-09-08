@@ -8,7 +8,7 @@ const opcionesMenu = [
     etiqueta: "Citas",
     icono: "pi pi-calendar",
     ruta: "/citas",
-    rolesPermitidos: ["DOCTOR", "ADMIN"],
+    rolesPermitidos: ["DOCTOR"],
   },
   {
     etiqueta: "Agendar Cita",

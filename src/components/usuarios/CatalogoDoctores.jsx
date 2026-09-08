@@ -6,15 +6,51 @@ import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog";
 import doctorService from "../../services/doctorService";
-import consultaService from "../../services/consultaService";
+import citaService from "../../services/citaService";
 import { listarEspecialidades } from "../../services/especialidadesService";
 import { mostrarErrorApi } from "../../utils/alertasApi";
+
+const ESTADO_CITA_CONFIG = {
+  PENDIENTE: { label: "Pendiente", icon: "pi-clock", style: "bg-amber-50 text-amber-700 border-amber-200" },
+  RESERVADA: { label: "Reservada", icon: "pi-calendar", style: "bg-blue-50 text-blue-700 border-blue-200" },
+  EN_ESPERA: { label: "En Espera", icon: "pi-hourglass", style: "bg-sky-50 text-sky-700 border-sky-200" },
+  ATENDIDA: { label: "Atendida", icon: "pi-check-circle", style: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+  CANCELADA: { label: "Cancelada", icon: "pi-times-circle", style: "bg-red-50 text-red-700 border-red-200" },
+  REASIGNADA: { label: "Reasignada", icon: "pi-refresh", style: "bg-purple-50 text-purple-700 border-purple-200" },
+};
 
 const getIniciales = (nombre, apellido) => {
     const n = (nombre || "D").charAt(0);
     const a = (apellido || "").charAt(0);
     return (n + a).toUpperCase();
-}
+};
+
+const formatearFecha = (fechaStr) => {
+  if (!fechaStr) return "Fecha no registrada";
+  try {
+    const partes = String(fechaStr).split("-");
+    if (partes.length === 3) {
+      const fechaObj = new Date(Number(partes[0]), Number(partes[1]) - 1, Number(partes[2]));
+      return fechaObj.toLocaleDateString("es-ES", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+      });
+    }
+    return new Date(fechaStr).toLocaleDateString("es-ES", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    });
+  } catch {
+    return fechaStr;
+  }
+};
+
+const formatearHora = (hora) => {
+  if (!hora) return "";
+  return String(hora).substring(0, 5);
+};
 
 export default function CatalogoDoctores(){
     const toast = useRef(null);
@@ -23,11 +59,11 @@ export default function CatalogoDoctores(){
     const [cargando, setCargando] = useState(true);
     const [filtroGlobal, setFiltroGlobal] = useState("");
 
-    // Modal para ver las consultas atendidas por el doctor
-    const [modalConsultas, setModalConsultas] = useState(false);
+    // Modal para ver las citas asignadas al doctor
+    const [modalCitas, setModalCitas] = useState(false);
     const [doctorSeleccionado, setDoctorSeleccionado] = useState(null);
-    const [consultasDoctor, setConsultasDoctor] = useState([]);
-    const [cargandoConsultas, setCargandoConsultas] = useState(false);
+    const [citasDoctor, setCitasDoctor] = useState([]);
+    const [cargandoCitas, setCargandoCitas] = useState(false);
 
     useEffect(() => {
         cargarDatos();
@@ -47,7 +83,7 @@ export default function CatalogoDoctores(){
         }finally{
             setCargando(false);
         }
-    }
+    };
 
     // Mapa para vincular rápidamente el id de la especialidad con el nombre
     const mapaEspecialidades = useMemo(() => {
@@ -65,19 +101,19 @@ export default function CatalogoDoctores(){
         }));
     }, [doctores, mapaEspecialidades]);
 
-    const abrirConsultasDoctor = async (doc) => {
+    const abrirCitasDoctor = async (doc) => {
         setDoctorSeleccionado(doc);
-        setModalConsultas(true);
-        setCargandoConsultas(true);
-        setConsultasDoctor([]);
+        setModalCitas(true);
+        setCargandoCitas(true);
+        setCitasDoctor([]);
 
         try {
-            const data = await consultaService.obtenerConsultasPorDoctor(doc.id);
-            setConsultasDoctor(data || []);
+            const data = await citaService.obtenerPorDoctor(doc.id);
+            setCitasDoctor(data || []);
         } catch (error) {
-            mostrarErrorApi(toast, error, "No se pudieron cargar las consultas del doctor");
+            mostrarErrorApi(toast, error, "No se pudieron cargar las citas del doctor");
         } finally {
-            setCargandoConsultas(false);
+            setCargandoCitas(false);
         }
     };
 
@@ -121,9 +157,9 @@ export default function CatalogoDoctores(){
     const accionesTemplate = (rowData) => (
         <div className="flex items-center justify-end gap-2">
           <Button
-            icon="pi pi-history"
-            label="Ver Consultas"
-            onClick={() => abrirConsultasDoctor(rowData)}
+            icon="pi pi-calendar"
+            label="Ver Citas"
+            onClick={() => abrirCitasDoctor(rowData)}
             className="px-4 py-2 text-xs sm:text-sm font-bold rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md shadow-blue-500/20 border-none transition-all cursor-pointer"
           />
         </div>
@@ -167,7 +203,7 @@ export default function CatalogoDoctores(){
               Catálogo del Cuerpo Médico
             </h2>
             <p className="text-xs text-slate-500 mt-0.5 m-0">
-              Directorio de médicos especialistas y registro de consultas atendidas
+              Directorio de médicos especialistas y registro de citas asignadas
             </p>
           </div>
 
@@ -194,10 +230,10 @@ export default function CatalogoDoctores(){
             </DataTable>
           </div>
 
-          {/* Modal Historial de Consultas Atendidas por el Doctor */}
+          {/* Modal Historial de Citas del Doctor */}
           <Dialog
-            visible={modalConsultas}
-            onHide={() => setModalConsultas(false)}
+            visible={modalCitas}
+            onHide={() => setModalCitas(false)}
             header={
               <div className="flex items-center gap-3.5">
                 <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center shadow-md shadow-blue-500/25 text-base font-black shrink-0">
@@ -205,7 +241,7 @@ export default function CatalogoDoctores(){
                 </div>
                 <div>
                   <span className="text-lg sm:text-xl font-bold font-display text-slate-900 block leading-tight">
-                    Consultas Atendidas - Dr(a). {doctorSeleccionado?.nombre} {doctorSeleccionado?.apellido}
+                    Citas del Dr(a). {doctorSeleccionado?.nombre} {doctorSeleccionado?.apellido}
                   </span>
                   <span className="text-xs sm:text-sm text-blue-600 font-semibold mt-0.5 block">
                     {doctorSeleccionado?.especialidadNombre} • Cód: {doctorSeleccionado?.codigo || "—"}
@@ -216,7 +252,7 @@ export default function CatalogoDoctores(){
             footer={
               <div className="w-full">
                 <Button
-                  onClick={() => setModalConsultas(false)}
+                  onClick={() => setModalCitas(false)}
                   className="relative w-full h-11 px-5 text-sm font-bold rounded-2xl bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 transition-all flex items-center justify-center shadow-xs cursor-pointer"
                 >
                   <i className="pi pi-times absolute left-4 sm:left-5 text-sm" />
@@ -229,108 +265,89 @@ export default function CatalogoDoctores(){
             className="p-fluid"
           >
             <div className="space-y-4 pt-2">
-              {cargandoConsultas ? (
+              {cargandoCitas ? (
                 <div className="py-12 flex flex-col items-center justify-center text-slate-400 space-y-2">
                   <i className="pi pi-spin pi-spinner text-3xl text-blue-600" />
-                  <span className="text-xs font-medium">Cargando consultas atendidas...</span>
+                  <span className="text-xs font-medium">Cargando citas del doctor...</span>
                 </div>
-              ) : consultasDoctor.length === 0 ? (
+              ) : citasDoctor.length === 0 ? (
                 <div className="py-12 text-center border border-dashed border-slate-200 rounded-2xl p-6 space-y-2">
-                  <i className="pi pi-folder-open text-3xl text-slate-300" />
-                  <p className="text-sm font-semibold text-slate-700 m-0">Sin consultas registradas</p>
-                  <p className="text-xs text-slate-500 m-0">Este médico aún no tiene consultas médicas atendidas en el sistema.</p>
+                  <i className="pi pi-calendar-times text-3xl text-slate-300" />
+                  <p className="text-sm font-semibold text-slate-700 m-0">Sin citas registradas</p>
+                  <p className="text-xs text-slate-500 m-0">Este médico aún no tiene citas asignadas o registradas en el sistema.</p>
                 </div>
               ) : (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between pb-1">
                     <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                      Historial de Consultas Realizadas
+                      Historial de Citas Médicas
                     </span>
                     <span className="text-xs font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200">
-                      Total: {consultasDoctor.length} consultas
+                      Total: {citasDoctor.length} citas
                     </span>
                   </div>
 
-                  {consultasDoctor.map((c, index) => (
-                    <div
-                      key={c.id || index}
-                      className="p-5 bg-white rounded-2xl border border-slate-200/80 shadow-xs space-y-3.5"
-                    >
-                      {/* Encabezado de la consulta */}
-                      <div className="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-slate-100">
-                        <div className="flex items-center gap-2">
-                          <i className="pi pi-calendar text-blue-600 text-sm" />
-                          <span className="text-sm font-bold text-slate-800">
-                            {c.fechaAtencion
-                              ? new Date(c.fechaAtencion).toLocaleDateString("es-ES", {
-                                  day: "2-digit",
-                                  month: "long",
-                                  year: "numeric",
-                                })
-                              : "Fecha no registrada"}
+                  {citasDoctor.map((c, index) => {
+                    const estadoConfig = ESTADO_CITA_CONFIG[c.estado] || {
+                      label: c.estado || "General",
+                      icon: "pi-circle-fill",
+                      style: "bg-slate-50 text-slate-700 border-slate-200",
+                    };
+
+                    return (
+                      <div
+                        key={c.id || index}
+                        className="p-4 sm:p-5 bg-white rounded-2xl border border-slate-200/80 shadow-xs space-y-3"
+                      >
+                        {/* Fila superior: Fecha, Horario y Badge de Estado */}
+                        <div className="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-slate-100">
+                          <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-slate-800">
+                              <i className="pi pi-calendar text-blue-600 text-xs" />
+                              <span>{formatearFecha(c.fecha)}</span>
+                            </div>
+                            {(c.horaInicio || c.horaFin) && (
+                              <div className="flex items-center gap-1 text-xs text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md font-mono">
+                                <i className="pi pi-clock text-[10px]" />
+                                <span>
+                                  {formatearHora(c.horaInicio)}
+                                  {c.horaFin ? ` - ${formatearHora(c.horaFin)}` : ""}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+
+                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold border ${estadoConfig.style}`}>
+                            <i className={`pi ${estadoConfig.icon} text-[10px]`} />
+                            <span>{estadoConfig.label}</span>
                           </span>
                         </div>
-                        <span className="text-xs text-slate-600 font-medium">
-                          Paciente: <strong className="text-slate-800 font-bold">{c.pacienteNombre || "Paciente"}</strong>
-                        </span>
-                      </div>
 
-                      {/* Signos vitales (Triaje) */}
-                      <div className="grid grid-cols-4 gap-2.5 p-3 bg-slate-50 rounded-xl text-center">
-                        <div>
-                          <span className="text-slate-400 block text-[10px] uppercase font-bold tracking-wider">Presión</span>
-                          <strong className="text-slate-800 text-xs sm:text-sm">{c.tirajePa || "—"}</strong>
+                        {/* Paciente */}
+                        <div className="flex items-center justify-between gap-2 text-xs">
+                          <div className="flex items-center gap-2">
+                            <div className="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-[10px] shrink-0">
+                              <i className="pi pi-user text-xs" />
+                            </div>
+                            <div>
+                              <span className="text-[10px] text-slate-400 block font-medium">Paciente Asignado</span>
+                              <strong className="text-slate-800 font-bold text-xs sm:text-sm">
+                                {c.pacienteNombre || "Paciente no especificado"}
+                              </strong>
+                            </div>
+                          </div>
                         </div>
-                        <div>
-                          <span className="text-slate-400 block text-[10px] uppercase font-bold tracking-wider">Temperatura</span>
-                          <strong className="text-slate-800 text-xs sm:text-sm">
-                            {c.tirajeTemperatura ? `${c.tirajeTemperatura}°C` : "—"}
-                          </strong>
-                        </div>
-                        <div>
-                          <span className="text-slate-400 block text-[10px] uppercase font-bold tracking-wider">Peso</span>
-                          <strong className="text-slate-800 text-xs sm:text-sm">
-                            {c.tirajePeso ? `${c.tirajePeso} kg` : "—"}
-                          </strong>
-                        </div>
-                        <div>
-                          <span className="text-slate-400 block text-[10px] uppercase font-bold tracking-wider">Estatura</span>
-                          <strong className="text-slate-800 text-xs sm:text-sm">
-                            {c.tirajeEstatura ? `${c.tirajeEstatura} m` : "—"}
-                          </strong>
+
+                        {/* Motivo de consulta */}
+                        <div className="bg-slate-50/80 p-3 rounded-xl border border-slate-100">
+                          <span className="text-[11px] font-bold text-slate-600 block mb-0.5">Motivo de la Cita:</span>
+                          <p className="text-xs text-slate-700 m-0 font-medium">
+                            {c.motivo || "Consulta médica general."}
+                          </p>
                         </div>
                       </div>
-
-                      {/* Diagnóstico */}
-                      <div>
-                        <span className="text-xs font-bold text-blue-900 block mb-1 flex items-center gap-1.5">
-                          <i className="pi pi-file-edit text-blue-600 text-xs" />
-                          Diagnóstico Clínico:
-                        </span>
-                        <p className="text-xs sm:text-sm text-slate-800 m-0 bg-blue-50/50 p-3 rounded-xl border border-blue-100/70 font-medium leading-relaxed">
-                          {c.diagnostico}
-                        </p>
-                      </div>
-
-                      {/* Tratamiento */}
-                      <div>
-                        <span className="text-xs font-bold text-emerald-900 block mb-1 flex items-center gap-1.5">
-                          <i className="pi pi-heart text-emerald-600 text-xs" />
-                          Tratamiento y Receta Médica:
-                        </span>
-                        <p className="text-xs sm:text-sm text-slate-800 m-0 bg-emerald-50/50 p-3 rounded-xl border border-emerald-100/70 font-medium leading-relaxed whitespace-pre-line">
-                          {c.tratamiento}
-                        </p>
-                      </div>
-
-                      {/* Nota */}
-                      {c.nota && (
-                        <div className="text-xs text-slate-600 bg-slate-50 p-2.5 rounded-xl border border-slate-200/60">
-                          <strong className="text-slate-700">Nota / Control:</strong> {c.nota}
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>
