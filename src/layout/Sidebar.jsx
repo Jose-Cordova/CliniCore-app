@@ -59,6 +59,12 @@ const opcionesMenu = [
     rolesPermitidos: ["ADMIN"],    // solo visible para administradores
   },
   {
+    etiqueta: "Reportes",
+    icono: "pi pi-file-pdf",
+    ruta: "/reports",
+    rolesPermitidos: ["ADMIN"],
+  },
+  {
     etiqueta: "Mi Disponibilidad",
     icono: "pi pi-calendar-plus",
     ruta: "/disponibilidad",
