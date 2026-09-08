@@ -34,31 +34,37 @@ const MisCitas = () => {
 
   const [cancelandoId, setCancelandoId] = useState(null);
 
-  const cargarDatos = async () => {
-    setCargando(true);
-    try {
-      const [citasData, consultasData] = await Promise.all([
-        citaService.obtenerCitasPorPaciente(usuario.pacienteId),
-        consultaService.obtenerConsultasPorPaciente(usuario.pacienteId),
-      ]);
-      setCitas(citasData);
-      setConsultas(consultasData);
-    } catch (error) {
-      toast.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail: "No se pudo cargar tu historial de citas.",
-      });
-    } finally {
-      setCargando(false);
-    }
-  };
+
+
+ const cargarDatos = async () => {
+  setCargando(true);
+  try {
+    const [citasData, consultasData] = await Promise.all([
+      citaService.obtenerCitasPorPaciente(usuario.pacienteId),
+      consultaService.obtenerConsultasPorPaciente(usuario.pacienteId),
+    ]);
+
+   
+    const citasOrdenadas = [...citasData].sort((a, b) => b.id - a.id);
+
+    setCitas(citasOrdenadas);
+    setConsultas(consultasData);
+  } catch (error) {
+    toast.current?.show({
+      severity: "error",
+      summary: "Error",
+      detail: "No se pudo cargar tu historial de citas.",
+    });
+  } finally {
+    setCargando(false);
+  }
+};
 
   useEffect(() => {
     if (usuario?.pacienteId) {
       cargarDatos();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, [usuario?.pacienteId]);
 
   const formatearFechaLegible = (fechaStr) => {
@@ -100,7 +106,7 @@ const confirmarCancelar = (cita) => {
   const cancelarCita = async (citaId) => {
     setCancelandoId(citaId);
     try {
-      await citaService.cancelar(citaId);
+      await citaService.cancelarCitaPaciente(citaId);
       toast.current?.show({
         severity: "success",
         summary: "Cita cancelada",
