@@ -21,6 +21,7 @@ import MisCitas from "../components/citas/MisCitas.jsx";
 import DashboardAdmin from "../components/dashboard/DashboardAdmin.jsx";
 import Especialidades from "../components/especialidad/Especialidades.jsx";
 import CatalogoDoctores from "../components/usuarios/CatalogoDoctores.jsx";
+import Reportes from "../components/reports/Reportes.jsx";
 
 const Inicio = () => {
   const { usuario } = useAuth();
@@ -107,6 +108,14 @@ const Router = () => (
           element={
             <RutaProtegida rolesPermitidos={["ADMIN"]}>
               <GestionUsuarios />
+            </RutaProtegida>
+          }
+        />
+        <Route
+          path="/reports"
+          element={
+            <RutaProtegida rolesPermitidos={["ADMIN"]}>
+              <Reportes />
             </RutaProtegida>
           }
         />
