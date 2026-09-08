@@ -31,16 +31,15 @@ const COLORES = {
     slate: "#64748B",
 };
 
+// Solo mostramos estos tres estados en la gráfica de dona
 const ETIQUETAS_ESTADO_CITA = {
     PENDIENTE: "Pendiente",
-    RESERVADA: "Reservada",
     ATENDIDA: "Atendida",
     CANCELADA: "Cancelada",
 };
 
 const COLORES_ESTADO_CITA = {
-    PENDIENTE: COLORES.slate,
-    RESERVADA: COLORES.primary,
+    PENDIENTE: COLORES.primary,
     ATENDIDA: COLORES.success,
     CANCELADA: COLORES.danger,
 };
@@ -99,7 +98,9 @@ const DashboardAdmin = () => {
         return acc;
     }, {});
 
-    const citasActivas = (citasPorEstado.PENDIENTE ?? 0) + (citasPorEstado.RESERVADA ?? 0);
+    // Consideramos activas solo las citas pendientes
+    const citasActivas = citasPorEstado.PENDIENTE ?? 0;
+
     const totalConsultas = listaConsultas.length;
     const totalPacientes = listaPacientes.length;
 
@@ -259,7 +260,7 @@ const DashboardAdmin = () => {
                 </Link>
                 <Link to="/doctores" className="bg-white rounded-2xl p-4 shadow-soft border border-slate-100 hover:shadow-md transition-all flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center shrink-0">
-                        <i className="pi pi-user-md text-lg" />
+                        <i className="pi pi-user text-lg" />
                     </div>
                     <div>
                         <p className="font-semibold text-slate-900 text-sm">Doctores</p>
